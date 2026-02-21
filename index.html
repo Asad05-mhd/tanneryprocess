@@ -330,7 +330,7 @@
         <input id="drumLotAddPcs" type="number" step="1" placeholder="e.g., 30">
 
         <div class="row">
-          <button class="primary miniBtn" onclick="addWbToDrum()">+ Add Lot</button>
+          <button type="button" class="primary miniBtn" onclick="addWbToDrum()">+ Add Lot</button>
           <button class="danger miniBtn" onclick="clearDrumWbDraft()">Clear Lots</button>
         </div>
 
@@ -1484,7 +1484,7 @@ function renderDrumWbMix(){
     html += '<tr>' +
       '<td><select id="wbmLot_'+line.id+'" onchange="onDrumWbDraftLotChange(\''+line.id+'\')">'+wbOptions(line.wbId)+'</select></td>' +
       '<td class="right"><input class="inlineInput" id="wbmPcs_'+line.id+'" type="number" step="1" placeholder="PCS" value="'+esc(line.pcs)+'" oninput="onDrumWbDraftPcsChange(\''+line.id+'\')"></td>' +
-      '<td class="right"><button class="danger miniBtn" onclick="deleteDrumWbDraftLine(\''+line.id+'\')">Remove</button></td>' +
+      '<td class="right"><button type="button" class="danger miniBtn" onclick="deleteDrumWbDraftLine(\''+line.id+'\')">Remove</button></td>' +
       '</tr>';
   }
 
@@ -3303,6 +3303,13 @@ function applyLatestMasterRatesToFinishing(){
   buildFinDoseUI();
   alert("Latest master rates applied to this finishing draft. Save Update to commit.");
 }
+/* ================= GLOBAL EXPOSE (for iOS inline onclick reliability) ================= */
+window.addWbToDrum = addWbToDrum;
+window.clearDrumWbDraftMix = clearDrumWbDraftMix;
+window.deleteDrumWbDraftLine = deleteDrumWbDraftLine;
+window.onDrumWbDraftLotChange = onDrumWbDraftLotChange;
+window.onDrumWbDraftSidesChange = onDrumWbDraftSidesChange;
+
 /* ================= INIT ================= */
 function init(){
   ensureDB();
