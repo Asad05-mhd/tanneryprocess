@@ -1,0 +1,3308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ALIF Leather • Tannery Control</title>
+
+<!-- Put your logo file in the SAME folder as this HTML and name it exactly: logo.png -->
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" href="logo.png">
+
+<style>
+  body{font-family:-apple-system,Helvetica,Arial,sans-serif;margin:0;background:#0f1115;color:#eaeef6;}
+  .top{
+    padding:14px 14px 10px;border-bottom:1px solid rgba(255,255,255,0.07);
+    background:linear-gradient(180deg,#141824,#0f1115);
+    display:flex;align-items:center;gap:10px;
+  }
+  .top img{
+    height:38px;width:38px;border-radius:10px;
+    background:rgba(255,255,255,0.06);padding:6px;
+    border:1px solid rgba(255,255,255,0.10);
+  }
+  .top b{font-size:15px;display:block;letter-spacing:0.2px;line-height:1.1;}
+  .top .small{font-size:12px;color:rgba(234,238,246,0.65);}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:14px;}
+  .banner{
+    background:rgba(255,193,7,0.12);
+    border:1px solid rgba(255,193,7,0.25);
+    color:#ffd36e;padding:10px 12px;border-radius:14px;margin-bottom:12px;display:none;
+  }
+
+  .tabs{
+    display:flex;gap:10px;padding:6px;border-radius:16px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    margin-bottom:12px;flex-wrap:wrap;
+  }
+  .tabbtn{
+    padding:10px 12px;font-size:13px;border-radius:12px;
+    border:1px solid rgba(255,255,255,0.10);
+    background:rgba(255,255,255,0.03);
+    color:rgba(234,238,246,0.85);cursor:pointer;
+  }
+  .tabbtn.active{
+    background:rgba(255,255,255,0.12);
+    border-color:rgba(255,255,255,0.20);
+    color:#fff;
+  }
+
+  .card{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.09);
+    border-radius:18px;padding:14px;margin-bottom:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  }
+  .card b{font-size:14px;}
+  .small{font-size:12px;color:rgba(234,238,246,0.60);margin-top:6px;}
+  .chip{
+    display:inline-block;padding:4px 8px;border-radius:999px;
+    border:1px solid rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.03);
+    color:rgba(234,238,246,0.70);font-size:11px;margin-left:8px;vertical-align:middle;
+  }
+  label{display:block;font-size:12px;color:rgba(234,238,246,0.70);margin:12px 0 6px;}
+  input,select{
+    width:100%;padding:12px;font-size:16px;color:#fff;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:14px;outline:none;box-sizing:border-box;
+  }
+  input:focus,select:focus{border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);}
+  button{
+    padding:12px 14px;font-size:14px;border-radius:14px;
+    border:1px solid rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.04);
+    color:#fff;cursor:pointer;
+  }
+  button.primary{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.22);}
+  button.danger{background:rgba(255,0,80,0.12);border-color:rgba(255,0,80,0.22);color:#ffd3dc;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+  .row>button{flex:1;min-width:160px;}
+  .miniBtn{padding:8px 10px;font-size:12px;border-radius:12px;}
+  .inlineInput{min-width:110px;text-align:right;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;color:#eaeef6;}
+  th,td{border-bottom:1px solid rgba(255,255,255,0.08);padding:10px 8px;text-align:left;vertical-align:top;}
+  th{background:rgba(255,255,255,0.03);color:rgba(234,238,246,0.70);}
+  .right{text-align:right;}
+  .hidden{display:none;}
+  .sectionTitle{margin:12px 0 6px;font-size:12px;color:rgba(234,238,246,0.75);letter-spacing:0.3px;text-transform:uppercase;}
+  .resultBox{
+    margin-top:12px;padding:12px;border:1px solid rgba(255,255,255,0.10);
+    border-radius:16px;background:rgba(255,255,255,0.03);
+  }
+  .big{font-size:22px;font-weight:700;margin-top:6px;letter-spacing:0.2px;}
+</style>
+</head>
+
+<body>
+  <div class="top">
+    <img src="logo.png" alt="ALIF Leather Goods">
+    <div>
+      <b>ALIF Leather • Tannery Control <span class="chip">Wet Blue → Crust → Finished</span></b>
+      <span class="small">PCS inventory + Drum % costing + Finishing kg costing + Lot compilation</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div id="storageBanner" class="banner">
+      ⚠️ Storage blocked here. Open from a local server URL (http://...) so iOS saves data.
+    </div>
+
+    <div class="tabs">
+      <button class="tabbtn active" id="tabMasters" onclick="showTab('masters')">Masters</button>
+      <button class="tabbtn" id="tabWetblue" onclick="showTab('wetblue')">Wet Blue Lots</button>
+      <button class="tabbtn" id="tabDrum" onclick="showTab('drum')">Drum Process</button>
+      <button class="tabbtn" id="tabCrust" onclick="showTab('crust')">Crust Inventory</button>
+      <button class="tabbtn" id="tabFinish" onclick="showTab('finish')">Finishing Process</button>
+      <button class="tabbtn" id="tabFinished" onclick="showTab('finished')">Finished Inventory</button>
+      <button class="tabbtn" id="tabJobs" onclick="showTab('jobs')">Jobs</button>
+      <button class="tabbtn" id="tabLot" onclick="showTab('lot')">Lot Compilation</button>
+      <button class="tabbtn" id="tabCosting" onclick="showTab('costing')">Costing</button>
+      <button class="tabbtn" id="tabExport" onclick="showTab('export')">Export</button>
+    </div>
+
+    <!-- =================== MASTERS =================== -->
+    <div id="pageMasters">
+      <div class="card">
+        <b>Color Master</b>
+        <div class="small">Add simple color names (Black, Tan...). Used in Drum + Finishing.</div>
+        <label>New Color</label>
+        <input id="mColor" type="text" placeholder="e.g., Black">
+        <div class="row">
+          <button class="primary" onclick="addColor()">Add Color</button>
+          <button onclick="clearInput('mColor')">Clear</button>
+        </div>
+        <div class="sectionTitle">Saved Colors</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead><tr><th>Color</th><th class="right">Edit</th><th class="right">Delete</th></tr></thead>
+            <tbody id="colorsBody"><tr><td colspan="3" class="small">No colors yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <b>Article Master</b>
+        <div class="small">Add article names (Bag, Belt...). Used in Drum + Finishing.</div>
+        <label>New Article</label>
+        <input id="mArticle" type="text" placeholder="e.g., Bag Leather">
+        <div class="row">
+          <button class="primary" onclick="addArticle()">Add Article</button>
+          <button onclick="clearInput('mArticle')">Clear</button>
+        </div>
+        <div class="sectionTitle">Saved Articles</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead><tr><th>Article</th><th class="right">Edit</th><th class="right">Delete</th></tr></thead>
+            <tbody id="articlesBody"><tr><td colspan="3" class="small">No articles yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <b>Drum Chemical Master (%, cost/kg)</b>
+        <div class="small">Used in Drum Process. Multi-dose supported.</div>
+
+        <label>Chemical Name</label>
+        <input id="dChemName" type="text" placeholder="e.g., Retan Resin">
+        <label>Rate (per kg)</label>
+        <input id="dChemRate" type="number" step="0.01" placeholder="e.g., 180">
+
+        <label>Default Stage</label>
+        <select id="dChemStage"></select>
+
+        <div class="row">
+          <button class="primary" onclick="addDrumChem()">Add Drum Chemical</button>
+          <button onclick="clearDrumChemInputs()">Clear</button>
+        </div>
+
+        <div class="sectionTitle">Saved Drum Chemicals</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Select</th><th>Name</th><th class="right">Rate/kg</th><th>Stage</th>
+                <th class="right">Edit</th><th class="right">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="drumChemBody"><tr><td colspan="6" class="small">No drum chemicals yet.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="row">
+          <button class="primary" onclick="goDrumWithSelection()">Use Selected → Drum Process</button>
+          <button class="danger" onclick="clearDrumChemSelection()">Clear Selection</button>
+        </div>
+        <div class="small">Selection is temporary and clears after you save/update a drum.</div>
+      </div>
+
+      <div class="card">
+        <b>Finishing Chemical Master (kg, cost/kg)</b>
+        <div class="small">Used in Finishing Process. Input kg used.</div>
+
+        <label>Chemical Name</label>
+        <input id="fChemName" type="text" placeholder="e.g., Binder / Pigment / Topcoat">
+        <label>Rate (per kg)</label>
+        <input id="fChemRate" type="number" step="0.01" placeholder="e.g., 220">
+
+        <div class="row">
+          <button class="primary" onclick="addFinishChem()">Add Finishing Chemical</button>
+          <button onclick="clearFinishChemInputs()">Clear</button>
+        </div>
+
+        <div class="sectionTitle">Saved Finishing Chemicals</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Select</th><th>Name</th><th class="right">Rate/kg</th>
+                <th class="right">Edit</th><th class="right">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="finishChemBody"><tr><td colspan="5" class="small">No finishing chemicals yet.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="row">
+          <button class="primary" onclick="goFinishWithSelection()">Use Selected → Finishing</button>
+          <button class="danger" onclick="clearFinishChemSelection()">Clear Selection</button>
+        </div>
+        <div class="small">Selection is temporary and clears after you save/update finishing.</div>
+      
+      <div class="card">
+        <b>Job Master (rate per coat per SIDE)</b>
+        <div class="small">Create job list here. In Jobs page you select jobs (checklist) and enter COATS per lot.</div>
+
+        <label>Job Name</label>
+        <input id="jobMName" type="text" placeholder="e.g., Spray Base / Ironing / Buffing">
+        <label>Rate per coat (per SIDE)</label>
+        <input id="jobMRate" type="number" step="0.01" placeholder="e.g., 1.50">
+
+        <div class="row">
+          <button class="primary" onclick="addJobMaster()">Add Job</button>
+          <button onclick="clearJobMasterInputs()">Clear</button>
+        </div>
+
+        <div class="sectionTitle">Saved Jobs</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Select</th><th>Job</th><th class="right">Rate/coat (side)</th>
+                <th class="right">Edit</th><th class="right">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="jobsMasterBody"><tr><td colspan="5" class="small">No jobs yet.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="row">
+          <button class="primary" onclick="goJobsWithSelection()">Use Selected → Jobs</button>
+          <button class="danger" onclick="clearJobSelection()">Clear Selection</button>
+        </div>
+      </div>
+
+</div>
+    </div>
+
+    <!-- =================== WET BLUE LOTS =================== -->
+    <div id="pageWetblue" class="hidden">
+      <div class="card">
+        <b>Add Wet Blue Lot</b>
+        <label>Lot No</label>
+        <input id="wbLotNo" type="text" placeholder="e.g., WB-101">
+        <label>Supplier (optional)</label>
+        <input id="wbSupplier" type="text" placeholder="e.g., Supplier Name">
+        <label>Total PCS</label>
+        <input id="wbPcs" type="number" step="1" placeholder="e.g., 100">
+        <label>Date (optional)</label>
+        <input id="wbDate" type="text" placeholder="e.g., 16-02-2026">
+        <div class="row">
+          <button class="primary" onclick="addWetblueLot()">Save Wet Blue Lot</button>
+          <button onclick="clearWetblueInputs()">Clear</button>
+        </div>
+        <div class="small">Tracking is PCS-only. No lot mixing in one drum.</div>
+      </div>
+
+      <div class="card">
+        <b>Wet Blue Lots</b>
+        <div class="small">Remaining PCS updates automatically when you save/update drums.</div>
+        <div style="overflow:auto;margin-top:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Lot</th><th>Supplier</th>
+                <th class="right">Total</th><th class="right">Remaining</th>
+                <th class="right">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="wbBody"><tr><td colspan="5" class="small">No wet blue lots yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================== DRUM PROCESS =================== -->
+    <div id="pageDrum" class="hidden">
+      <div class="card">
+        <b>Drum Header</b>
+        <div class="small">
+          Select Wet Blue Lot + PCS used + Weighed kg. Dye is here, so select Article + Color.
+          <span class="chip" id="drumModeChip">Mode: New</span>
+        </div>
+
+        <label>Date</label>
+        <input id="drumDate" type="text" placeholder="e.g., 18-02-2026">
+        <label>Drum No</label>
+        <input id="drumNo" type="text" placeholder="e.g., Drum 3">
+
+        <label>Add Wet Blue Lots (multi-lot)</label>
+        <div class="small">You can combine multiple Wet Blue lots in one drum. Add each lot with PCS (sides) used. Total PCS is auto-summed.</div>
+
+        <label>Wet Blue Lot (shows remaining)</label>
+        <select id="drumLotAddSel"></select>
+
+        <label>PCS used from this lot</label>
+        <input id="drumLotAddPcs" type="number" step="1" placeholder="e.g., 30">
+
+        <div class="row">
+          <button class="primary miniBtn" onclick="addWbToDrum()">+ Add Lot</button>
+          <button class="danger miniBtn" onclick="clearDrumWbDraft()">Clear Lots</button>
+        </div>
+
+        <div class="sectionTitle">Drum Wet Blue Mix</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead><tr><th>Wet Blue Lot</th><th class="right">PCS</th><th class="right">Delete</th></tr></thead>
+            <tbody id="drumWbMixBody"><tr><td colspan="3" class="small">No lots added yet.</td></tr></tbody>
+          </table>
+        </div>
+
+        <label>Total PCS (auto)</label>
+        <input id="drumPcs" type="number" step="1" placeholder="auto" readonly>
+
+        <label>Weighed kg (Wet blue shaved weight) <span class="chip">% base</span></label>
+        <input id="drumBaseKg" type="number" step="0.01" placeholder="e.g., 950">
+
+        <label>Article</label>
+        <select id="drumArticleSel"></select>
+
+        <label>Color</label>
+        <select id="drumColorSel"></select>
+
+        <div class="row">
+          <button class="primary" onclick="buildDrumDraftFromSelection()">Load Selected Drum Chemicals</button>
+          <button class="danger" onclick="cancelDrumEditOrClear()">Cancel / Clear</button>
+        </div>
+        <div class="small">Tip: In Edit mode this button will APPEND new selected chemicals (won’t remove old ones).</div>
+      </div>
+
+      <div class="card">
+        <b>Drum Chemicals (multi-dose)</b>
+        <div class="small">Use “+ Add dose” to use same chemical twice/thrice.</div>
+        <div id="drumDoseWrap" class="small" style="margin-top:10px;">Select drum chemicals in Masters → Drum Chemical Master.</div>
+
+        <div class="sectionTitle">Chemical Summary</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead><tr><th>Chemical</th><th class="right">Total %</th><th class="right">Total kg</th><th class="right">Total cost</th></tr></thead>
+            <tbody id="drumSumBody"><tr><td colspan="4" class="small">—</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="resultBox">
+          Total Drum Chemical Cost
+          <div class="big" id="drumTotalCostOut">—</div>
+          Drum Cost per Piece
+          <div class="big" id="drumCostPerPcOut">—</div>
+          <div class="small" id="drumHint">Enter PCS + base kg + % to calculate</div>
+        </div>
+
+        <div class="row">
+          <button class="primary" id="drumSaveBtn" onclick="saveOrUpdateDrum()">Save Drum (creates Crust Lot)</button>
+          <button id="drumApplyLatestBtn" class="miniBtn" onclick="applyLatestMasterRatesToDrum()" style="display:none;">Apply latest master rates</button>
+          <button onclick="showTab(\'crust\')">Go to Crust Inventory</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <b>Saved Drums</b>
+        <div class="small">Edit any drum anytime (system recalculates crust + finishing + finished).</div>
+        <div style="overflow:auto;margin-top:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th><th>Drum</th><th>WB Lot</th><th>Article</th><th>Color</th>
+                <th class="right">PCS</th><th class="right">Cost</th><th class="right">Edit</th>
+              </tr>
+            </thead>
+            <tbody id="drumsBody"><tr><td colspan="8" class="small">No drums yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================== CRUST INVENTORY =================== -->
+    <div id="pageCrust" class="hidden">
+      <div class="card">
+        <b>Crust Lots (created from drums)</b>
+        <div class="small">Remaining PCS reduces when you save finishing batches. Drum cost per piece is carried forward.</div>
+        <div style="overflow:auto;margin-top:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Crust Lot</th><th>Source WB Lot</th><th>Drum</th>
+                <th>Article</th><th>Color</th>
+                <th class="right">Total PCS</th><th class="right">Remaining PCS</th>
+                <th class="right">Cost/PC</th><th class="right">Remaining Value</th>
+              </tr>
+            </thead>
+            <tbody id="crustBody"><tr><td colspan="9" class="small">No crust lots yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================== FINISHING PROCESS =================== -->
+    <div id="pageFinish" class="hidden">
+      <div class="card">
+        <b>Finishing Header <span class="chip" id="finModeChip">Mode: New</span></b>
+        <div class="small">Select Crust Lot + PCS used. Article & Color default from crust. Color override allowed.</div>
+
+        <label>Date</label>
+        <input id="finDate" type="text" placeholder="e.g., 22-02-2026">
+        <label>Finishing Batch No</label>
+        <input id="finBatchNo" type="text" placeholder="e.g., FIN-1">
+
+        <label>Crust Lot (shows remaining)</label>
+        <select id="finCrustSel"></select>
+
+        <label>PCS used from crust</label>
+        <input id="finPcs" type="number" step="1" placeholder="e.g., 15">
+
+        <label>Article</label>
+        <select id="finArticleSel"></select>
+
+        <label>Color</label>
+        <select id="finColorSel"></select>
+
+        <div class="row">
+          <button class="primary" onclick="applyCrustDefaultsToFinishing()">Load defaults from crust</button>
+          <button class="danger" onclick="clearFinDraft()">Cancel / Clear</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <b>Finishing Chemicals (kg based)</b>
+        <div class="small">Enter kg used per dose line. Multi-dose allowed.</div>
+        <div id="finDoseWrap" class="small" style="margin-top:10px;">Select finishing chemicals in Masters → Finishing Chemical Master.</div>
+
+        <div class="sectionTitle">Finishing Chemical Summary</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead><tr><th>Chemical</th><th class="right">Total kg</th><th class="right">Total cost</th></tr></thead>
+            <tbody id="finSumBody"><tr><td colspan="3" class="small">—</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="resultBox">
+          Drum Cost Allocated (PCS × Crust cost/pc)
+          <div class="big" id="finDrumAllocOut">—</div>
+          Finishing Chemical Cost
+          <div class="big" id="finChemCostOut">—</div>
+          Total Finished Cost (Allocated + Finishing)
+          <div class="big" id="finTotalCostOut">—</div>
+          Cost per Piece
+          <div class="big" id="finCostPerPcOut">—</div>
+          <div class="small" id="finHint">Enter PCS + kg used to calculate</div>
+        </div>
+
+        <div class="row">
+          <button class="primary" onclick="saveOrUpdateFinishing()">Save / Update Finishing</button>
+          <button id="finApplyLatestBtn" class="miniBtn" onclick="applyLatestMasterRatesToFinishing()" style="display:none;">Apply latest master rates</button>
+          <button onclick="showTab(\'finished\')">Go to Finished Inventory</button>
+        </div>
+
+        <div class="small">Tip: In Edit mode, selecting new chemicals in Masters + “Use Selected → Finishing” will APPEND them.</div>
+      </div>
+
+      <div class="card">
+        <b>Saved Finishing Batches</b>
+        <div class="small">Edit anytime (recalculates linked Finished Lot + cost/sqft after sqft is entered).</div>
+        <div style="overflow:auto;margin-top:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th><th>Batch</th><th>Crust Lot</th><th>Article</th><th>Color</th>
+                <th class="right">PCS</th><th class="right">Total Cost</th><th class="right">Edit</th>
+              </tr>
+            </thead>
+            <tbody id="finBatchesBody"><tr><td colspan="8" class="small">No finishing batches yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================== FINISHED INVENTORY =================== -->
+    <div id="pageFinished" class="hidden">
+      <div class="card">
+        <b>Finished Lots</b>
+        <div class="small">Enter Finished sqft later. Drum cost/sqft + finishing cost/sqft + total cost/sqft update automatically.</div>
+        <div style="overflow:auto;margin-top:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th><th>Finished Lot</th><th>From Crust</th><th>Article</th><th>Color</th>
+                <th class="right">PCS</th>
+                <th class="right">Sqft</th>
+                <th class="right">Drum Cost/sqft</th>
+                <th class="right">Fin Cost/sqft</th>
+                <th class="right">Total Cost</th>
+                <th class="right">Total Cost/sqft</th>
+                <th class="right">Update sqft</th>
+                <th class="right">Jobs</th>
+                <th class="right">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="finishedBody"><tr><td colspan="13" class="small">No finished lots yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- =================== JOBS PAGE =================== -->
+    <div id="pageJobs" class="hidden">
+      <div class="card">
+        <b>Jobs (per Finished Lot)</b>
+        <div class="small">Select Finished Lot → Load selected jobs (from Masters) → Enter coats per job.</div>
+
+        <label>Select Finished Lot</label>
+        <select id="jobsLotSel" onchange="renderJobsPage()"></select>
+
+        <div class="row">
+          <button class="primary" onclick="loadSelectedJobsToLot()">Load Selected Jobs</button>
+          <button class="danger" onclick="clearJobsForLot()">Delete All Jobs (This Lot)</button>
+        </div>
+
+        <div class="sectionTitle">Jobs List (enter coats)</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Job</th>
+                <th class="right">Rate/coat (side)</th>
+                <th class="right">Coats</th>
+                <th class="right">Cost/side</th>
+                <th class="right">Total Cost (SIDES)</th>
+                <th class="right">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="jobsBody"><tr><td colspan="6" class="small">Select a finished lot.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="resultBox">
+          Total Job Cost (this Finished Lot)
+          <div class="big" id="jobTotalOut">—</div>
+          Total Job Cost / SIDE
+          <div class="big" id="jobPerSideOut">—</div>
+          Total Job Cost / Sqft
+          <div class="big" id="jobPerSqftOut">—</div>
+          <div class="small" id="jobHint">Enter sqft in Finished Inventory to get per sqft.</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================== LOT COMPILATION =================== -->
+    <div id="pageLot" class="hidden">
+      <div class="card">
+        <b>Lot Compilation</b>
+        <div class="small">Select a Wet Blue lot to see: PCS flow + finished sqft + article/color summary + costs.</div>
+        <label>Select Wet Blue Lot</label>
+        <select id="lotSel" onchange="renderLotCompilation()"></select>
+        <div id="lotReport" class="small" style="margin-top:10px;">Select a lot.</div>
+      </div>
+    </div>
+
+    
+    <!-- =================== COSTING =================== -->
+    <div id="pageCosting" class="hidden">
+      
+      <div class="card">
+        <b>Finished Lot Costing (Wet Blue + Recoveries)</b>
+        <div class="small">Enter Wet Blue purchase rate and recoveries to get <b>Net Wet Blue Rate</b>. This will calculate Wet Blue cost + total cost and cost/sqft for the selected Finished Lot.</div>
+
+        <label>Select Finished Lot</label>
+        <select id="costFinSel" onchange="renderFinishedCosting()"></select>
+
+        <label>Wet Blue Rate (per HIDE)</label>
+        <input id="cWbRate" type="number" step="0.01" placeholder="e.g., 2200" oninput="recalcFinishedCosting()">
+
+        <label>Split Recovery (per HIDE)</label>
+        <input id="cSplitRec" type="number" step="0.01" placeholder="e.g., 120" oninput="recalcFinishedCosting()">
+
+        <label>Galma Recovery (per HIDE)</label>
+        <input id="cGalmaRec" type="number" step="0.01" placeholder="e.g., 80" oninput="recalcFinishedCosting()">
+
+        <div class="resultBox">
+          Net Wet Blue Rate (per HIDE)
+          <div class="big" id="cNetRateOut">—</div>
+
+          Wet Blue Cost for this Finished Lot <span class="small">(HIDE used = SIDES/2)</span>
+          <div class="big" id="cWbCostOut">—</div>
+
+          Total Cost (Drum + Fin + Jobs + Wet Blue)
+          <div class="big" id="cTotalInclOut">—</div>
+
+          Total Cost / Sqft (incl. Wet Blue)
+          <div class="big" id="cPerSqftOut">—</div>
+
+          <div class="small" id="cHint">Select a finished lot and enter rate values.</div>
+        </div>
+
+        <div class="row">
+          <button class="primary" onclick="saveFinishedCosting()">Save Costing to this Finished Lot</button>
+          <button onclick="clearFinishedCostingInputs()">Clear</button>
+          <button onclick="printFinishedCostingSheet()">Print / Save PDF</button>
+        </div>
+        <div class="small">Note: Total Cost / Sqft needs sqft in Finished Inventory.</div>
+      </div>
+
+      <div class="card">
+        <b>Costing Dashboard</b>
+        <div class="small">Quick view of total costs, per-sqft costs, and inventory value. Filter by Wet Blue lot if needed.</div>
+
+        <label>Filter by Wet Blue Lot (optional)</label>
+        <select id="costWbSel" onchange="renderCosting()"></select>
+
+        <div class="row">
+          <button class="primary" onclick="renderCosting()">Refresh</button>
+          <button onclick="clearCostingFilter()">Clear Filter</button>
+        </div>
+
+        <div class="sectionTitle">Key Totals</div>
+        <div class="resultBox">
+          Total Drum Chemical Cost
+          <div class="big" id="costTotDrum">—</div>
+          Total Finishing Chemical Cost
+          <div class="big" id="costTotFinChem">—</div>
+          Total Job Cost
+          <div class="big" id="costTotJobs">—</div>
+          Total Finished Cost (Drum + Fin + Jobs)
+          <div class="big" id="costTotAll">—</div>
+          <div class="small" id="costTotHint">—</div>
+        </div>
+
+        <div class="sectionTitle">Inventory Value</div>
+        <div class="resultBox">
+          Remaining Crust Value
+          <div class="big" id="costCrustValue">—</div>
+          Finished Lots Total Value
+          <div class="big" id="costFinishedValue">—</div>
+          <div class="small">Wet Blue value is not calculated (no purchase cost entered).</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <b>Wet Blue Lot Summary</b>
+        <div class="small">Per-lot flow + cost per sqft (only where finished sqft is entered).</div>
+        <div style="overflow:auto;margin-top:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Wet Blue Lot</th>
+                <th class="right">Total (HIDE)</th>
+                <th class="right">Remaining (HIDE)</th>
+                <th class="right">Drummed (SIDES)</th>
+                <th class="right">Finished (SIDES)</th>
+                <th class="right">Finished Sqft</th>
+                <th class="right">Total Cost</th>
+                <th class="right">Cost / Sqft</th>
+              </tr>
+            </thead>
+            <tbody id="costWbBody"><tr><td colspan="8" class="small">—</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <b>Article + Color Cost Summary (Finished)</b>
+        <div class="small">Aggregates only finished lots (with or without sqft). Cost/sqft needs sqft.</div>
+        <div style="overflow:auto;margin-top:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Article</th>
+                <th>Color</th>
+                <th class="right">SIDES</th>
+                <th class="right">Sqft</th>
+                <th class="right">Total Cost</th>
+                <th class="right">Cost / Sqft</th>
+              </tr>
+            </thead>
+            <tbody id="costArtBody"><tr><td colspan="6" class="small">—</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+<!-- =================== EXPORT =================== -->
+    <div id="pageExport" class="hidden">
+      <div class="card">
+        <b>Export CSV (Excel)</b>
+        <div class="small">Exports all data. Old iOS fallback shows text to copy.</div>
+        <div class="row">
+          <button class="primary" onclick="exportCSV()">Export All Data CSV</button>
+          <button class="danger" onclick="wipeAll()">Delete ALL Data</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+/* ================= iOS9-SAFE STORAGE WRAPPER ================= */
+var __mem = {}, __storageBlocked=false;
+function storageGet(k){ try{return localStorage.getItem(k);}catch(e){__storageBlocked=true; return (__mem.hasOwnProperty(k)?__mem[k]:null);} }
+function storageSet(k,v){ try{localStorage.setItem(k,v);}catch(e){__storageBlocked=true; __mem[k]=String(v);} }
+function storageRemove(k){ try{localStorage.removeItem(k);}catch(e){__storageBlocked=true; delete __mem[k];} }
+function updateStorageBanner(){ if(__storageBlocked){ var el=document.getElementById("storageBanner"); if(el) el.style.display="block"; } }
+
+function byId(x){ return document.getElementById(x); }
+function num(v){ var n=parseFloat(v); return isFinite(n)?n:NaN; }
+function esc(s){
+  s=String(s||"");
+  return s.replace(/[&<>"']/g,function(m){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m];
+  });
+}
+function fix(n,d){ return isFinite(n)?n.toFixed(d):"—"; }
+function nowId(p){ return (p||"x")+String(new Date().getTime())+String(Math.floor(Math.random()*1000)); }
+function clearInput(id){ var el=byId(id); if(el) el.value=""; }
+
+/* ================= Date + Rate History Helpers ================= */
+function parseDateAny(s){
+  s=String(s||"").trim();
+  if(!s) return NaN;
+  var m = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})$/);
+  if(m){
+    var dd=parseInt(m[1],10), mm=parseInt(m[2],10), yy=parseInt(m[3],10);
+    if(yy<100) yy+=2000;
+    return new Date(yy, mm-1, dd).getTime();
+  }
+  var m2 = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+  if(m2){
+    return new Date(parseInt(m2[1],10), parseInt(m2[2],10)-1, parseInt(m2[3],10)).getTime();
+  }
+  var t = Date.parse(s);
+  return isFinite(t)?t:NaN;
+}
+function todayDMY(){
+  var d=new Date();
+  var dd=("0"+d.getDate()).slice(-2);
+  var mm=("0"+(d.getMonth()+1)).slice(-2);
+  var yy=d.getFullYear();
+  return dd+"-"+mm+"-"+yy;
+}
+function ensureRateHistory(obj){
+  if(!obj) return;
+  if(!obj.rateHistory || !obj.rateHistory.length){
+    var r = isFinite(obj.rate)?obj.rate:0;
+    obj.rateHistory=[{from: todayDMY(), ts: parseDateAny(todayDMY()), rate:r}];
+  } else {
+    for(var i=0;i<obj.rateHistory.length;i++){
+      if(!isFinite(obj.rateHistory[i].ts)) obj.rateHistory[i].ts = parseDateAny(obj.rateHistory[i].from);
+    }
+  }
+}
+function getRateAt(obj, dateStr){
+  if(!obj) return NaN;
+  ensureRateHistory(obj);
+  var ts = parseDateAny(dateStr);
+  if(!isFinite(ts)) ts = parseDateAny(todayDMY());
+  var best = null;
+  for(var i=0;i<obj.rateHistory.length;i++){
+    var h=obj.rateHistory[i];
+    if(!isFinite(h.ts)) h.ts = parseDateAny(h.from);
+    if(isFinite(h.ts) && h.ts <= ts){
+      if(!best || h.ts > best.ts) best = h;
+    }
+  }
+  return best ? best.rate : obj.rate;
+}
+/* ================= CONFIG ================= */
+var STAGES = ["Retan","Dye","Fatliquor","Finish","Other"];
+
+
+/* ================= PCS UNITS ================= */
+var SIDES_PER_HIDE = 2;
+function sidesToHide(s){ return s / SIDES_PER_HIDE; }
+function hideToSides(h){ return h * SIDES_PER_HIDE; }
+function normalizeHide(h){ if(!isFinite(h)) return NaN; return Math.round(h*2)/2; }
+
+/* ================= DB ================= */
+function getDB(){ try{return JSON.parse(storageGet("alif_tannery_db")||"{}");}catch(e){return {};} }
+function setDB(db){ storageSet("alif_tannery_db", JSON.stringify(db)); }
+function ensureDB(){
+  var db=getDB();
+  if(!db.colors) db.colors=[];
+  if(!db.articles) db.articles=[];
+  if(!db.wetblue) db.wetblue=[];
+  if(!db.drumChems) db.drumChems=[];
+  if(!db.finishChems) db.finishChems=[];
+  if(!db.selDrumChem) db.selDrumChem=[];
+  if(!db.selFinishChem) db.selFinishChem=[];
+  if(!db.drumDraft) db.drumDraft=null;
+  if(!db.drumWbDraft) db.drumWbDraft=[];
+  if(!db.drumWbDraft) if(!db.drumWbDraft) db.drumWbDraft=[];            // [{wbId, lotNo, pcs}]
+  if(!db.finDraft) db.finDraft=null;
+  if(!db.drumEditId) db.drumEditId=null;
+  if(!db.finEditId) db.finEditId=null;
+  if(!db.drums) db.drums=[];
+  if(!db.crust) db.crust=[];
+  if(!db.finishing) db.finishing=[];
+  if(!db.finished) db.finished=[];
+
+  // Jobs
+  if(!db.jobsMaster) db.jobsMaster=[];           // {id,name,rate}
+  if(!db.selJobs) db.selJobs=[];                 // [jobId]
+  if(!db.jobsByFinishedId) db.jobsByFinishedId={}; // { finishedId: [ {id,jobId,name,rate,coats} ] }
+  setDB(db);
+  return db;
+}
+function getById(arr, id){
+  for(var i=0;i<arr.length;i++) if(arr[i].id===id) return arr[i];
+  return null;
+}
+
+/* ================= TABS ================= */
+function setActiveTab(tabId){
+  var tabs=["Masters","Wetblue","Drum","Crust","Finish","Finished","Jobs","Lot","Costing","Export"];
+  for(var i=0;i<tabs.length;i++){
+    var t=tabs[i];
+    byId("tab"+t).className="tabbtn";
+    byId("page"+t).className="hidden";
+  }
+  byId("tab"+tabId).className="tabbtn active";
+  byId("page"+tabId).className="";
+}
+function showTab(which){
+  if(which==="masters"){ setActiveTab("Masters"); renderMasters(); }
+  if(which==="wetblue"){ setActiveTab("Wetblue"); renderWetblue(); }
+  if(which==="drum"){ setActiveTab("Drum"); renderDrumPage(); }
+  if(which==="crust"){ setActiveTab("Crust"); renderCrust(); }
+  if(which==="finish"){ setActiveTab("Finish"); renderFinishPage(); }
+  if(which==="finished"){ setActiveTab("Finished"); renderFinished(); }
+  if(which==="jobs"){ setActiveTab("Jobs"); renderJobsSelectors(); renderJobsPage(); }
+  if(which==="lot"){ setActiveTab("Lot"); renderLotSelectors(); renderLotCompilation(); }
+  if(which==="costing"){ setActiveTab("Costing"); renderCosting(); }
+  if(which==="export"){ setActiveTab("Export"); }
+  updateStorageBanner();
+}
+
+/* ================= dropdown fill ================= */
+function fillStageSelect(selId, selected){
+  var el=byId(selId); if(!el) return;
+  var html="";
+  for(var i=0;i<STAGES.length;i++){
+    var s=STAGES[i];
+    html += '<option value="'+esc(s)+'" '+(s===selected?'selected':'')+'>'+esc(s)+'</option>';
+  }
+  el.innerHTML=html;
+}
+function fillColorsSelect(selId, selectedId){
+  var db=ensureDB();
+  var el=byId(selId); if(!el) return;
+  var html="";
+  for(var i=0;i<db.colors.length;i++){
+    var c=db.colors[i];
+    html += '<option value="'+esc(c.id)+'" '+(c.id===selectedId?'selected':'')+'>'+esc(c.name)+'</option>';
+  }
+  if(!db.colors.length) html = '<option value="">(Add colors in Masters)</option>';
+  el.innerHTML=html;
+}
+function fillArticlesSelect(selId, selectedId){
+  var db=ensureDB();
+  var el=byId(selId); if(!el) return;
+  var html="";
+  for(var i=0;i<db.articles.length;i++){
+    var a=db.articles[i];
+    html += '<option value="'+esc(a.id)+'" '+(a.id===selectedId?'selected':'')+'>'+esc(a.name)+'</option>';
+  }
+  if(!db.articles.length) html = '<option value="">(Add articles in Masters)</option>';
+  el.innerHTML=html;
+}
+function fillWetblueSelect(selId, selectedId){
+  var db=ensureDB();
+  var el=byId(selId); if(!el) return;
+  var html="";
+  for(var i=0;i<db.wetblue.length;i++){
+    var w=db.wetblue[i];
+    var rHide = num(w.remainPcs);
+    html += '<option value="'+esc(w.id)+'" '+(w.id===selectedId?'selected':'')+'>'+esc(w.lotNo)+' (rem '+fix(rHide,1)+' hide / '+fix(hideToSides(rHide),0)+' sides)</option>';
+  }
+  if(!db.wetblue.length) html = '<option value="">(Add Wet Blue lots first)</option>';
+  el.innerHTML=html;
+}
+function fillCrustSelect(selId, selectedId){
+  var db=ensureDB();
+  var el=byId(selId); if(!el) return;
+  var html="";
+  for(var i=0;i<db.crust.length;i++){
+    var c=db.crust[i];
+    html += '<option value="'+esc(c.id)+'" '+(c.id===selectedId?'selected':'')+'>'+esc(c.crustLotNo)+' (rem '+c.remainPcs+') • '+esc(c.articleName)+' • '+esc(c.colorName)+'</option>';
+  }
+  if(!db.crust.length) html = '<option value="">(No crust lots yet)</option>';
+  el.innerHTML=html;
+}
+
+/* ================= MASTERS: Color ================= */
+function addColor(){
+  var name=(byId("mColor").value||"").trim();
+  if(!name){ alert("Enter color name"); return; }
+  var db=ensureDB();
+  for(var i=0;i<db.colors.length;i++){
+    if(String(db.colors[i].name).toLowerCase()===name.toLowerCase()){
+      alert("Color already exists"); return;
+    }
+  }
+  db.colors.unshift({id:nowId("col"), name:name});
+  setDB(db); clearInput("mColor"); renderMasters();
+}
+function editColor(id){
+  var db=ensureDB(); var c=getById(db.colors,id); if(!c) return;
+  var v=prompt("Edit color name:", c.name);
+  if(v===null) return; v=(v||"").trim(); if(!v) return;
+  c.name=v; setDB(db); renderMasters();
+}
+function deleteColor(id){
+  if(!confirm("Delete this color?")) return;
+  var db=ensureDB(), out=[];
+  for(var i=0;i<db.colors.length;i++) if(db.colors[i].id!==id) out.push(db.colors[i]);
+  db.colors=out; setDB(db); renderMasters();
+}
+
+/* ================= MASTERS: Article ================= */
+function addArticle(){
+  var name=(byId("mArticle").value||"").trim();
+  if(!name){ alert("Enter article name"); return; }
+  var db=ensureDB();
+  for(var i=0;i<db.articles.length;i++){
+    if(String(db.articles[i].name).toLowerCase()===name.toLowerCase()){
+      alert("Article already exists"); return;
+    }
+  }
+  db.articles.unshift({id:nowId("art"), name:name});
+  setDB(db); clearInput("mArticle"); renderMasters();
+}
+function editArticle(id){
+  var db=ensureDB(); var a=getById(db.articles,id); if(!a) return;
+  var v=prompt("Edit article name:", a.name);
+  if(v===null) return; v=(v||"").trim(); if(!v) return;
+  a.name=v; setDB(db); renderMasters();
+}
+function deleteArticle(id){
+  if(!confirm("Delete this article?")) return;
+  var db=ensureDB(), out=[];
+  for(var i=0;i<db.articles.length;i++) if(db.articles[i].id!==id) out.push(db.articles[i]);
+  db.articles=out; setDB(db); renderMasters();
+}
+
+/* ================= MASTERS: Drum Chems ================= */
+function clearDrumChemInputs(){
+  byId("dChemName").value=""; byId("dChemRate").value="";
+  fillStageSelect("dChemStage","Retan");
+}
+function addDrumChem(){
+  var name=(byId("dChemName").value||"").trim();
+  var rate=num(byId("dChemRate").value);
+  var stage=byId("dChemStage").value;
+  if(!name){ alert("Enter chemical name"); return; }
+  if(!isFinite(rate)||rate<=0){ alert("Enter valid rate"); return; }
+  var db=ensureDB();
+  for(var i=0;i<db.drumChems.length;i++){
+    if(String(db.drumChems[i].name).toLowerCase()===name.toLowerCase()){
+      alert("Chemical already exists"); return;
+    }
+  }
+  db.drumChems.unshift({id:nowId("dc"), name:name, rate:rate, stage:stage, rateHistory:[{from: todayDMY(), ts: parseDateAny(todayDMY()), rate: rate}]});
+  setDB(db); clearDrumChemInputs(); renderMasters();
+}
+function toggleSelDrumChem(id){
+  var db=ensureDB(), sel=db.selDrumChem||[];
+  var idx=sel.indexOf(id);
+  if(idx>=0) sel.splice(idx,1); else sel.push(id);
+  db.selDrumChem=sel; setDB(db);
+}
+function clearDrumChemSelection(){ var db=ensureDB(); db.selDrumChem=[]; setDB(db); renderMasters(); }
+function editDrumChem(id){
+  var db=ensureDB(); var c=getById(db.drumChems,id); if(!c) return;
+  var r=prompt("Rate/kg for "+c.name, String(c.rate)); if(r===null) return;
+  var nr=num(r); if(!isFinite(nr)||nr<=0){ alert("Invalid rate"); return; } ensureRateHistory(c);
+  c.rate=nr;
+  c.rateHistory.push({from: todayDMY(), ts: parseDateAny(todayDMY()), rate: nr});
+  var s=prompt("Stage for "+c.name+" (Retan/Dye/Fatliquor/Finish/Other)", c.stage||"Retan");
+  if(s!==null && s){ c.stage=s; }
+  setDB(db); renderMasters();
+}
+function deleteDrumChem(id){
+  if(!confirm("Delete this drum chemical?")) return;
+  var db=ensureDB(), out=[];
+  for(var i=0;i<db.drumChems.length;i++) if(db.drumChems[i].id!==id) out.push(db.drumChems[i]);
+  db.drumChems=out;
+  var sel=db.selDrumChem||[], outSel=[];
+  for(var j=0;j<sel.length;j++) if(sel[j]!==id) outSel.push(sel[j]);
+  db.selDrumChem=outSel;
+  setDB(db); renderMasters();
+}
+function goDrumWithSelection(){
+  var db=ensureDB();
+  if(!db.selDrumChem.length){ alert("Select drum chemicals first."); return; }
+  showTab("drum"); buildDrumDraftFromSelection();
+}
+
+/* ================= MASTERS: Finishing Chems ================= */
+function clearFinishChemInputs(){ byId("fChemName").value=""; byId("fChemRate").value=""; }
+function addFinishChem(){
+  var name=(byId("fChemName").value||"").trim();
+  var rate=num(byId("fChemRate").value);
+  if(!name){ alert("Enter chemical name"); return; }
+  if(!isFinite(rate)||rate<=0){ alert("Enter valid rate"); return; }
+  var db=ensureDB();
+  for(var i=0;i<db.finishChems.length;i++){
+    if(String(db.finishChems[i].name).toLowerCase()===name.toLowerCase()){
+      alert("Chemical already exists"); return;
+    }
+  }
+  db.finishChems.unshift({id:nowId("fc"), name:name, rate:rate, rateHistory:[{from: todayDMY(), ts: parseDateAny(todayDMY()), rate: rate}]});
+  setDB(db); clearFinishChemInputs(); renderMasters();
+}
+function toggleSelFinishChem(id){
+  var db=ensureDB(), sel=db.selFinishChem||[];
+  var idx=sel.indexOf(id);
+  if(idx>=0) sel.splice(idx,1); else sel.push(id);
+  db.selFinishChem=sel; setDB(db);
+}
+function clearFinishChemSelection(){ var db=ensureDB(); db.selFinishChem=[]; setDB(db); renderMasters(); }
+function editFinishChem(id){
+  var db=ensureDB(); var c=getById(db.finishChems,id); if(!c) return;
+  var r=prompt("Rate/kg for "+c.name, String(c.rate)); if(r===null) return;
+  var nr=num(r); if(!isFinite(nr)||nr<=0){ alert("Invalid rate"); return; }
+  ensureRateHistory(c);
+  c.rate=nr;
+  c.rateHistory.push({from: todayDMY(), ts: parseDateAny(todayDMY()), rate: nr});
+  setDB(db); renderMasters();
+}
+function deleteFinishChem(id){
+  if(!confirm("Delete this finishing chemical?")) return;
+  var db=ensureDB(), out=[];
+  for(var i=0;i<db.finishChems.length;i++) if(db.finishChems[i].id!==id) out.push(db.finishChems[i]);
+  db.finishChems=out;
+  var sel=db.selFinishChem||[], outSel=[];
+  for(var j=0;j<sel.length;j++) if(sel[j]!==id) outSel.push(sel[j]);
+  db.selFinishChem=outSel;
+  setDB(db); renderMasters();
+}
+function goFinishWithSelection(){
+  var db=ensureDB();
+  if(!db.selFinishChem.length){ alert("Select finishing chemicals first."); return; }
+  showTab("finish"); buildFinDraftFromSelection();
+}
+
+
+/* ================= Job Master ================= */
+function clearJobMasterInputs(){ byId("jobMName").value=""; byId("jobMRate").value=""; }
+function addJobMaster(){
+  var name=(byId("jobMName").value||"").trim();
+  var rate=num(byId("jobMRate").value);
+  if(!name){ alert("Enter job name"); return; }
+  if(!isFinite(rate)||rate<0){ alert("Enter valid rate"); return; }
+  var db=ensureDB();
+  for(var i=0;i<db.jobsMaster.length;i++){
+    if(String(db.jobsMaster[i].name).toLowerCase()===name.toLowerCase()){
+      alert("Job already exists"); return;
+    }
+  }
+  db.jobsMaster.unshift({id:nowId("jm"), name:name, rate:rate});
+  setDB(db); clearJobMasterInputs(); renderMasters();
+}
+function toggleSelJob(id){
+  var db=ensureDB(), sel=db.selJobs||[];
+  var idx=sel.indexOf(id);
+  if(idx>=0) sel.splice(idx,1); else sel.push(id);
+  db.selJobs=sel; setDB(db);
+}
+function clearJobSelection(){ var db=ensureDB(); db.selJobs=[]; setDB(db); renderMasters(); }
+function editJobMaster(id){
+  var db=ensureDB(); var j=getById(db.jobsMaster,id); if(!j) return;
+  var r=prompt("Rate/coat (per SIDE) for "+j.name, String(j.rate)); if(r===null) return;
+  var nr=num(r); if(!isFinite(nr)||nr<0){ alert("Invalid rate"); return; }
+  j.rate=nr;
+  var n=prompt("Edit job name:", j.name); if(n!==null){ n=(n||"").trim(); if(n) j.name=n; }
+  setDB(db); renderMasters();
+}
+function deleteJobMaster(id){
+  if(!confirm("Delete this job?")) return;
+  var db=ensureDB(), out=[];
+  for(var i=0;i<db.jobsMaster.length;i++) if(db.jobsMaster[i].id!==id) out.push(db.jobsMaster[i]);
+  db.jobsMaster=out;
+  var sel=db.selJobs||[], outSel=[];
+  for(var j=0;j<sel.length;j++) if(sel[j]!==id) outSel.push(sel[j]);
+  db.selJobs=outSel;
+  setDB(db); renderMasters();
+}
+function goJobsWithSelection(){
+  var db=ensureDB();
+  if(!db.selJobs.length){ alert("Select jobs first."); return; }
+  showTab("jobs");
+}
+
+/* ================= Jobs (per finished lot) ================= */
+function renderJobsSelectors(){
+  fillFinishedSelect("jobsLotSel", byId("jobsLotSel").value || "");
+}
+function openJobsForFinished(finishedId){
+  showTab("jobs");
+  byId("jobsLotSel").value = finishedId;
+  renderJobsPage();
+}
+function loadSelectedJobsToLot(){
+  var db=ensureDB();
+  var finishedId = byId("jobsLotSel").value;
+  if(!finishedId){ alert("Select a finished lot"); return; }
+  if(!db.selJobs.length){ alert("Select jobs in Masters first."); return; }
+
+  if(!db.jobsByFinishedId[finishedId]) db.jobsByFinishedId[finishedId]=[];
+
+  // add only missing jobId entries (avoid duplicates)
+  for(var i=0;i<db.selJobs.length;i++){
+    var jm=getById(db.jobsMaster, db.selJobs[i]);
+    if(!jm) continue;
+
+    var exists=false;
+    var arr=db.jobsByFinishedId[finishedId];
+    for(var j=0;j<arr.length;j++){
+      if(arr[j].jobId===jm.id){ exists=true; break; }
+    }
+    if(exists) continue;
+
+    arr.unshift({ id: nowId("jl"), jobId: jm.id, name: jm.name, rate: jm.rate, coats: "" });
+  }
+
+  // clear selection after load
+  db.selJobs=[];
+  setDB(db);
+  renderMasters();
+  renderJobsPage();
+}
+function onJobCoatsChange(lineId){
+  var db=ensureDB();
+  var finishedId = byId("jobsLotSel").value;
+  if(!finishedId) return;
+  var arr = db.jobsByFinishedId[finishedId] || [];
+  var el = byId("jobCoats_"+lineId);
+  for(var i=0;i<arr.length;i++){
+    if(arr[i].id===lineId){
+      arr[i].coats = el ? el.value : arr[i].coats;
+      break;
+    }
+  }
+  db.jobsByFinishedId[finishedId]=arr;
+  setDB(db);
+  renderJobsPage();
+}
+function deleteJobLine(lineId){
+  var db=ensureDB();
+  var finishedId = byId("jobsLotSel").value;
+  if(!finishedId) return;
+  var arr = db.jobsByFinishedId[finishedId] || [];
+  var out=[];
+  for(var i=0;i<arr.length;i++) if(arr[i].id!==lineId) out.push(arr[i]);
+  db.jobsByFinishedId[finishedId]=out;
+  setDB(db);
+  renderJobsPage();
+}
+function clearJobsForLot(){
+  var db=ensureDB();
+  var finishedId = byId("jobsLotSel").value;
+  if(!finishedId) return;
+  if(!confirm("Delete ALL jobs for this finished lot?")) return;
+  db.jobsByFinishedId[finishedId]=[];
+  setDB(db);
+  renderJobsPage();
+}
+function calcJobCostForFinished(finishedObj, lines){
+  var sides = finishedObj.sides || 0;
+  var total=0;
+  var perSide=0;
+
+  for(var i=0;i<lines.length;i++){
+    var coats = parseInt(lines[i].coats,10);
+    var rate = parseFloat(lines[i].rate);
+    if(!(isFinite(coats) && coats>=0)) coats=0;
+    if(!(isFinite(rate) && rate>=0)) rate=0;
+
+    var cSide = coats * rate;
+    perSide += cSide;
+    total += (cSide * sides);
+  }
+  return { total: total, perSide: perSide };
+}
+function renderJobsPage(){
+  var db=ensureDB();
+  renderJobsSelectors();
+
+  var finishedId = byId("jobsLotSel").value;
+  if(!finishedId){
+    byId("jobsBody").innerHTML='<tr><td colspan="6" class="small">No finished lots yet.</td></tr>';
+    byId("jobTotalOut").innerHTML="—";
+    byId("jobPerSideOut").innerHTML="—";
+    byId("jobPerSqftOut").innerHTML="—";
+    byId("jobHint").innerHTML="Create a finished lot first.";
+    return;
+  }
+
+  var f=null;
+  for(var i=0;i<db.finished.length;i++) if(db.finished[i].id===finishedId){ f=db.finished[i]; break; }
+  if(!f){ return; }
+
+  var lines=db.jobsByFinishedId[finishedId] || [];
+
+  if(!lines.length){
+    byId("jobsBody").innerHTML='<tr><td colspan="6" class="small">No jobs loaded for this lot. Select jobs in Masters → Use Selected → Jobs.</td></tr>';
+  }else{
+    var html="";
+    for(var j=0;j<lines.length;j++){
+      var L=lines[j];
+      var coats=parseInt(L.coats,10); if(!(isFinite(coats)&&coats>=0)) coats=0;
+      var rate=parseFloat(L.rate); if(!(isFinite(rate)&&rate>=0)) rate=0;
+
+      var costPerSide = coats*rate;
+      var totalCost = costPerSide * (f.sides||0);
+
+      html+='<tr>' +
+        '<td>'+esc(L.name||"")+'</td>' +
+        '<td class="right">'+rate.toFixed(2)+'</td>' +
+        '<td class="right"><input class="inlineInput" id="jobCoats_'+L.id+'" type="number" step="1" value="'+esc(L.coats)+'" oninput="onJobCoatsChange(\''+L.id+'\')"></td>' +
+        '<td class="right">'+costPerSide.toFixed(2)+'</td>' +
+        '<td class="right">'+totalCost.toFixed(2)+'</td>' +
+        '<td class="right"><button class="danger miniBtn" onclick="deleteJobLine(\''+L.id+'\')">Delete</button></td>' +
+      '</tr>';
+    }
+    byId("jobsBody").innerHTML=html;
+  }
+
+  // totals
+  var jobSum = calcJobCostForFinished(f, lines);
+  var perSqft = NaN;
+  if(isFinite(f.sqft) && f.sqft>0) perSqft = jobSum.total / f.sqft;
+
+  byId("jobTotalOut").innerHTML = isFinite(jobSum.total) ? jobSum.total.toFixed(2) : "—";
+  byId("jobPerSideOut").innerHTML = isFinite(jobSum.perSide) ? jobSum.perSide.toFixed(2) : "—";
+  byId("jobPerSqftOut").innerHTML = isFinite(perSqft) ? perSqft.toFixed(4) : "—";
+  byId("jobHint").innerHTML = (!isFinite(f.sqft) || f.sqft<=0) ? "Sqft not entered yet. Go to Finished Inventory → Update sqft." : "OK ✅";
+
+  // write back to finished lot costs (jobCost + totals)
+  f.jobCost = jobSum.total;
+
+  var drumAlloc = isFinite(f.drumAllocCost)?f.drumAllocCost:0;
+  var finChem = isFinite(f.finChemCost)?f.finChemCost:0;
+  f.totalCost = drumAlloc + finChem + (isFinite(f.jobCost)?f.jobCost:0);
+  f.costPerSide = (f.sides>0) ? (f.totalCost/f.sides) : null;
+
+  if(isFinite(f.sqft) && f.sqft>0){
+    f.costPerSqft = f.totalCost / f.sqft;
+    f.drumCostPerSqft = drumAlloc / f.sqft;
+    f.finCostPerSqft  = finChem / f.sqft;
+    f.jobCostPerSqft  = (isFinite(f.jobCost)?f.jobCost:0) / f.sqft;
+  } else {
+    f.costPerSqft=null;
+    f.drumCostPerSqft=null;
+    f.finCostPerSqft=null;
+    f.jobCostPerSqft=null;
+  }
+
+  setDB(db);
+}
+
+/* ================= Render Masters ================= */
+function renderMasters(){
+  var db=ensureDB();
+  fillStageSelect("dChemStage","Retan");
+
+  var cb=byId("colorsBody");
+  if(!db.colors.length) cb.innerHTML='<tr><td colspan="3" class="small">No colors yet.</td></tr>';
+  else{
+    var html="";
+    for(var i=0;i<db.colors.length;i++){
+      var c=db.colors[i];
+      html+='<tr><td>'+esc(c.name)+'</td>' +
+            '<td class="right"><button onclick="editColor(\''+c.id+'\')">Edit</button></td>' +
+            '<td class="right"><button class="danger" onclick="deleteColor(\''+c.id+'\')">Delete</button></td></tr>';
+    }
+    cb.innerHTML=html;
+  }
+
+  var ab=byId("articlesBody");
+  if(!db.articles.length) ab.innerHTML='<tr><td colspan="3" class="small">No articles yet.</td></tr>';
+  else{
+    var htmlA="";
+    for(var j=0;j<db.articles.length;j++){
+      var a=db.articles[j];
+      htmlA+='<tr><td>'+esc(a.name)+'</td>' +
+             '<td class="right"><button onclick="editArticle(\''+a.id+'\')">Edit</button></td>' +
+             '<td class="right"><button class="danger" onclick="deleteArticle(\''+a.id+'\')">Delete</button></td></tr>';
+    }
+    ab.innerHTML=htmlA;
+  }
+
+  var dcb=byId("drumChemBody");
+  if(!db.drumChems.length) dcb.innerHTML='<tr><td colspan="6" class="small">No drum chemicals yet.</td></tr>';
+  else{
+    var sel=db.selDrumChem||[];
+    var h="";
+    for(var k=0;k<db.drumChems.length;k++){
+      var dc=db.drumChems[k];
+      var checked=(sel.indexOf(dc.id)>=0)?"checked":"";
+      h+='<tr>' +
+         '<td><input type="checkbox" '+checked+' onchange="toggleSelDrumChem(\''+dc.id+'\')"></td>' +
+         '<td>'+esc(dc.name)+'</td>' +
+         '<td class="right">'+fix(dc.rate,2)+'</td>' +
+         '<td>'+esc(dc.stage||"")+'</td>' +
+         '<td class="right"><button onclick="editDrumChem(\''+dc.id+'\')">Edit</button></td>' +
+         '<td class="right"><button class="danger" onclick="deleteDrumChem(\''+dc.id+'\')">Delete</button></td>' +
+         '</tr>';
+    }
+    dcb.innerHTML=h;
+  }
+
+  var fcb=byId("finishChemBody");
+  if(!db.finishChems.length) fcb.innerHTML='<tr><td colspan="5" class="small">No finishing chemicals yet.</td></tr>';
+  else{
+    var selF=db.selFinishChem||[];
+    var hf="";
+    for(var x=0;x<db.finishChems.length;x++){
+      var fc=db.finishChems[x];
+      var checkedF=(selF.indexOf(fc.id)>=0)?"checked":"";
+      hf+='<tr>' +
+          '<td><input type="checkbox" '+checkedF+' onchange="toggleSelFinishChem(\''+fc.id+'\')"></td>' +
+          '<td>'+esc(fc.name)+'</td>' +
+          '<td class="right">'+fix(fc.rate,2)+'</td>' +
+          '<td class="right"><button onclick="editFinishChem(\''+fc.id+'\')">Edit</button></td>' +
+          '<td class="right"><button class="danger" onclick="deleteFinishChem(\''+fc.id+'\')">Delete</button></td>' +
+          '</tr>';
+    }
+    fcb.innerHTML=hf;
+  }
+
+  var jb=byId("jobsMasterBody");
+  if(jb){
+    if(!db.jobsMaster.length) jb.innerHTML='<tr><td colspan="5" class="small">No jobs yet.</td></tr>';
+    else{
+      var selJ=db.selJobs||[];
+      var hj="";
+      for(var y=0;y<db.jobsMaster.length;y++){
+        var jm=db.jobsMaster[y];
+        var checkedJ=(selJ.indexOf(jm.id)>=0)?"checked":"";
+        hj+='<tr>' +
+            '<td><input type="checkbox" '+checkedJ+' onchange="toggleSelJob(\''+jm.id+'\')"></td>' +
+            '<td>'+esc(jm.name)+'</td>' +
+            '<td class="right">'+fix(jm.rate,2)+'</td>' +
+            '<td class="right"><button onclick="editJobMaster(\''+jm.id+'\')">Edit</button></td>' +
+            '<td class="right"><button class="danger" onclick="deleteJobMaster(\''+jm.id+'\')">Delete</button></td>' +
+            '</tr>';
+      }
+      jb.innerHTML=hj;
+    }
+  }
+
+}
+
+/* ================= Wet Blue Lots ================= */
+function clearWetblueInputs(){ byId("wbLotNo").value=""; byId("wbSupplier").value=""; byId("wbPcs").value=""; byId("wbDate").value=""; }
+function addWetblueLot(){
+  var lotNo=(byId("wbLotNo").value||"").trim();
+  var supplier=(byId("wbSupplier").value||"").trim();
+  var pcs=num(byId("wbPcs").value); // HIDE pcs (0.5 allowed)
+  var date=(byId("wbDate").value||"").trim();
+
+  if(!lotNo){ alert("Enter Lot No"); return; }
+  if(!isFinite(pcs) || pcs<=0){ alert("Enter Total PCS (HIDE)"); return; }
+
+  pcs = normalizeHide(pcs);
+  if(!isFinite(pcs) || pcs<=0){ alert("HIDE must be in 0.5 steps"); return; }
+
+  var db=ensureDB();
+  for(var i=0;i<db.wetblue.length;i++){
+    if(String(db.wetblue[i].lotNo).toLowerCase()===lotNo.toLowerCase()){
+      alert("Lot already exists"); return;
+    }
+  }
+  db.wetblue.unshift({id:nowId("wb"), lotNo:lotNo, supplier:supplier, totalPcs:pcs, remainPcs:pcs, date:date});
+  setDB(db); clearWetblueInputs(); renderWetblue();
+}
+function deleteWetblueLot(id){
+  if(!confirm("Delete this wet blue lot? (only safe if unused)")) return;
+  var db=ensureDB();
+  for(var i=0;i<db.drums.length;i++) if(db.drums[i].wbId===id){ alert("Cannot delete: drums linked to this lot."); return; }
+  var out=[];
+  for(var j=0;j<db.wetblue.length;j++) if(db.wetblue[j].id!==id) out.push(db.wetblue[j]);
+  db.wetblue=out; setDB(db); renderWetblue();
+}
+function renderWetblue(){
+  var db=ensureDB();
+  var wb=byId("wbBody");
+  if(!db.wetblue.length){ wb.innerHTML='<tr><td colspan="7" class="small">No wet blue lots yet.</td></tr>'; return; }
+
+  var html="";
+  for(var i=0;i<db.wetblue.length;i++){
+    var w=db.wetblue[i];
+    var tHide = num(w.totalPcs);
+    var rHide = num(w.remainPcs);
+    var tSide = hideToSides(tHide);
+    var rSide = hideToSides(rHide);
+    html+='<tr><td>'+esc(w.lotNo)+'</td><td>'+esc(w.supplier||"")+'</td>' +
+      '<td class="right">'+fix(tHide,1)+'</td><td class="right">'+fix(rHide,1)+'</td>' +
+      '<td class="right">'+fix(tSide,0)+'</td><td class="right">'+fix(rSide,0)+'</td>' +
+      '<td class="right"><button class="danger" onclick="deleteWetblueLot(\''+w.id+'\')">Delete</button></td></tr>';
+  }
+  wb.innerHTML=html;
+}
+
+/* ================= Drum Wet Blue Mix (multi-lot) ================= */
+function syncDrumPcsFromMix(){
+  var db=ensureDB();
+  var total=0;
+  for(var i=0;i<(db.drumWbDraft||[]).length;i++){
+    var p=parseInt(db.drumWbDraft[i].pcs,10);
+    if(isFinite(p)&&p>0) total+=p;
+  }
+  if(byId("drumPcs")) byId("drumPcs").value = total ? total : "";
+  return total;
+}
+
+function renderDrumWbMix(){
+  var db=ensureDB();
+  if(!db.drumWbDraft) if(!db.drumWbDraft) db.drumWbDraft=[];
+  var b=byId("drumWbMixBody");
+  if(!b) return;
+
+  // ensure at least one line for convenience
+  if(!db.drumWbDraft.length){
+    db.drumWbDraft.push({ id: nowId("wbm"), wbId:"", pcs:"" });
+    setDB(db);
+  }
+
+  var totalPcs=0;
+  var html="";
+
+  // build wetblue options html (shows remaining hide)
+  function wbOptions(selectedId){
+    var out='<option value="">(Select lot)</option>';
+    for(var i=0;i<db.wetblue.length;i++){
+      var w=db.wetblue[i];
+      out += '<option value="'+esc(w.id)+'" '+(w.id===selectedId?'selected':'')+'>'+esc(w.lotNo)+' (rem '+fix(w.remainHide,1)+' hide)</option>';
+    }
+    return out;
+  }
+
+  for(var i=0;i<db.drumWbDraft.length;i++){
+    var line=db.drumWbDraft[i];
+    var pcs=parseInt(line.pcs,10);
+    if(!(isFinite(pcs)&&pcs>0)) pcs=0;
+    totalPcs += pcs;
+
+    html += '<tr>' +
+      '<td><select id="wbmLot_'+line.id+'" onchange="onDrumWbDraftLotChange(\''+line.id+'\')">'+wbOptions(line.wbId)+'</select></td>' +
+      '<td class="right"><input class="inlineInput" id="wbmPcs_'+line.id+'" type="number" step="1" placeholder="PCS" value="'+esc(line.pcs)+'" oninput="onDrumWbDraftPcsChange(\''+line.id+'\')"></td>' +
+      '<td class="right"><button class="danger miniBtn" onclick="deleteDrumWbDraftLine(\''+line.id+'\')">Remove</button></td>' +
+      '</tr>';
+  }
+
+  // footer
+  html += '<tr><td class="right"><b>Total</b></td><td class="right"><b>'+totalPcs+'</b></td><td></td></tr>';
+
+  b.innerHTML=html;
+
+  // auto-sum PCS into header field
+  syncDrumPcsFromMix();
+  recalcDrum();
+}
+
+function addWbToDrum(){
+  var db=ensureDB();
+  var wbId=byId("drumLotAddSel").value;
+  var pcs=parseInt(byId("drumLotAddPcs").value,10);
+  if(!wbId){ alert("Select a Wet Blue lot"); return; }
+  if(!isFinite(pcs)||pcs<=0){ alert("Enter PCS > 0"); return; }
+  var wb=getById(db.wetblue, wbId);
+  if(!wb){ alert("Lot not found"); return; }
+
+  // merge if already exists
+  var found=false;
+  for(var i=0;i<db.drumWbDraft.length;i++){
+    if(db.drumWbDraft[i].wbId===wbId){
+      db.drumWbDraft[i].pcs = String(parseInt(db.drumWbDraft[i].pcs,10) + pcs);
+      found=true; break;
+    }
+  }
+  if(!found) db.drumWbDraft.push({wbId:wbId, pcs:String(pcs), lotNo:wb.lotNo});
+  setDB(db);
+  byId("drumLotAddPcs").value="";
+  renderDrumWbMix();
+}
+function removeWbFromDrum(i){
+  var db=ensureDB();
+  if(!db.drumWbDraft) return;
+  db.drumWbDraft.splice(i,1);
+  setDB(db);
+  renderDrumWbMix();
+}
+function clearDrumWbDraft(){
+  var db=ensureDB();
+  if(!confirm("Clear all Wet Blue lots from this drum mix?")) return;
+  if(!db.drumWbDraft) db.drumWbDraft=[];
+  setDB(db);
+  renderDrumWbMix();
+}
+
+function addDrumWbDraftLine(){
+  var db=ensureDB();
+  if(!db.drumWbDraft) if(!db.drumWbDraft) db.drumWbDraft=[];
+  db.drumWbDraft.push({ id: nowId("wbm"), wbId: "", pcs: "" });
+  setDB(db);
+  renderDrumWbMix();
+}
+function onDrumWbDraftLotChange(lineId){
+  var db=ensureDB();
+  var el=byId("wbmLot_"+lineId);
+  if(!el) return;
+  for(var i=0;i<(db.drumWbDraft||[]).length;i++){
+    if(db.drumWbDraft[i].id===lineId){ db.drumWbDraft[i].wbId = el.value; break; }
+  }
+  setDB(db);
+  renderDrumWbMix();
+}
+function onDrumWbDraftPcsChange(lineId){
+  var db=ensureDB();
+  var el=byId("wbmPcs_"+lineId);
+  if(!el) return;
+  for(var i=0;i<(db.drumWbDraft||[]).length;i++){
+    if(db.drumWbDraft[i].id===lineId){ db.drumWbDraft[i].pcs = el.value; break; }
+  }
+  setDB(db);
+  renderDrumWbMix();
+}
+function deleteDrumWbDraftLine(lineId){
+  var db=ensureDB();
+  var out=[];
+  for(var i=0;i<(db.drumWbDraft||[]).length;i++){
+    if(db.drumWbDraft[i].id!==lineId) out.push(db.drumWbDraft[i]);
+  }
+  db.drumWbDraft=out;
+  setDB(db);
+  renderDrumWbMix();
+}
+
+
+/* ================= Drum Process (NEW+EDIT) ================= */
+function renderDrumPage(){
+  var db=ensureDB();
+  fillWetblueSelect("drumLotAddSel", "");
+  fillArticlesSelect("drumArticleSel", "");
+  fillColorsSelect("drumColorSel", "");
+  renderDrumWbMix();
+
+  renderDrumsList();
+
+  if(db.drumEditId){
+    byId("drumModeChip").innerHTML="Mode: Editing";
+    byId("drumSaveBtn").innerHTML="Update Drum (recalculate everything)";
+  } else {
+    byId("drumModeChip").innerHTML="Mode: New";
+    byId("drumSaveBtn").innerHTML="Save Drum (creates Crust Lot)";
+  }
+
+  
+  // Apply latest master rates button (only in edit mode)
+  var btn=byId("drumApplyLatestBtn");
+  if(btn) btn.style.display = db.drumEditId ? "inline-block" : "none";
+  if(!db.drumEditId && db.drumDraft) { db.drumDraft.forceLatestRates=false; setDB(db); }
+if(db.drumDraft) buildDrumDoseUI();
+  else{
+    byId("drumDoseWrap").innerHTML="Select drum chemicals in Masters → Drum Chemical Master.";
+    byId("drumSumBody").innerHTML='<tr><td colspan="4" class="small">—</td></tr>';
+    byId("drumTotalCostOut").innerHTML="—";
+    byId("drumCostPerPcOut").innerHTML="—";
+  }
+}
+
+function renderDrumsList(){
+  var db=ensureDB();
+  var tb=byId("drumsBody");
+  if(!db.drums.length){ tb.innerHTML='<tr><td colspan="8" class="small">No drums yet.</td></tr>'; return; }
+  var html="";
+  for(var i=0;i<db.drums.length;i++){
+    var d=db.drums[i];
+    html+='<tr>' +
+      '<td>'+esc(d.date||"")+'</td>' +
+      '<td>'+esc(d.drumNo||"")+'</td>' +
+      '<td>'+esc(d.wbLotNo||"")+'</td>' +
+      '<td>'+esc(d.articleName||"")+'</td>' +
+      '<td>'+esc(d.colorName||"")+'</td>' +
+      '<td class="right">'+d.pcs+'</td>' +
+      '<td class="right">'+(isFinite(d.totalCost)?Number(d.totalCost).toFixed(2):"")+'</td>' +
+      '<td class="right"><button onclick="startEditDrum(\''+d.id+'\')">Edit</button></td>' +
+    '</tr>';
+  }
+  tb.innerHTML=html;
+}
+
+function buildDrumDraftFromSelection(){
+  var db=ensureDB();
+  if(!db.selDrumChem.length){ alert("Select drum chemicals in Masters first."); return; }
+
+  if(db.drumDraft && db.drumDraft.doses && db.drumDraft.doses.length){
+    for(var i=0;i<db.selDrumChem.length;i++){
+      var chem=getById(db.drumChems, db.selDrumChem[i]);
+      if(!chem) continue;
+      db.drumDraft.doses.push({
+        doseId: nowId("dd"),
+        chemId: chem.id,
+        stage: chem.stage || "Retan",
+        pct: ""
+      });
+    }
+    db.selDrumChem = [];
+    setDB(db);
+    buildDrumDoseUI();
+    return;
+  }
+
+  var doses=[];
+  for(var j=0;j<db.selDrumChem.length;j++){
+    var c=getById(db.drumChems, db.selDrumChem[j]);
+    if(!c) continue;
+    doses.push({ doseId: nowId("dd"), chemId: c.id, stage: c.stage || "Retan", pct: "" });
+  }
+  db.drumDraft={ doses:doses };
+  db.selDrumChem = [];
+  setDB(db);
+  buildDrumDoseUI();
+}
+
+function cancelDrumEditOrClear(){
+  var db=ensureDB();
+  if(db.drumEditId){
+    if(!confirm("Cancel editing this drum?")) return;
+    db.drumEditId=null;
+  }
+  db.drumDraft=null;
+  setDB(db);
+  byId("drumDate").value="";
+  byId("drumNo").value="";
+  byId("drumPcs").value="";
+  byId("drumBaseKg").value="";
+  renderDrumPage();
+}
+
+function addDrumDose(chemId){
+  var db=ensureDB(); if(!db.drumDraft) return;
+  var chem=getById(db.drumChems, chemId);
+  db.drumDraft.doses.push({doseId:nowId("dd"), chemId:chemId, stage:(chem?chem.stage:"Other"), pct:""});
+  setDB(db); buildDrumDoseUI();
+}
+function deleteDrumDose(doseId){
+  var db=ensureDB(); if(!db.drumDraft) return;
+  var out=[];
+  for(var i=0;i<db.drumDraft.doses.length;i++){
+    if(db.drumDraft.doses[i].doseId!==doseId) out.push(db.drumDraft.doses[i]);
+  }
+  db.drumDraft.doses=out; setDB(db); buildDrumDoseUI();
+}
+function stageSelect(id, selected, onchangeJS){
+  var s='<select id="'+esc(id)+'" onchange="'+esc(onchangeJS)+'" style="min-width:140px;">';
+  for(var i=0;i<STAGES.length;i++){
+    var st=STAGES[i];
+    s+='<option value="'+esc(st)+'" '+(st===selected?'selected':'')+'>'+esc(st)+'</option>';
+  }
+  s+='</select>'; return s;
+}
+window.onDrumStageChange = function(doseId){
+  var db=ensureDB(); if(!db.drumDraft) return;
+  var el=byId("dStage_"+doseId);
+  for(var i=0;i<db.drumDraft.doses.length;i++){
+    if(db.drumDraft.doses[i].doseId===doseId){
+      db.drumDraft.doses[i].stage = el ? el.value : db.drumDraft.doses[i].stage;
+      break;
+    }
+  }
+  setDB(db);
+};
+window.onDrumPctChange = function(doseId){
+  var db=ensureDB(); if(!db.drumDraft) return;
+  var el=byId("dPct_"+doseId);
+  for(var i=0;i<db.drumDraft.doses.length;i++){
+    if(db.drumDraft.doses[i].doseId===doseId){
+      db.drumDraft.doses[i].pct = el ? el.value : db.drumDraft.doses[i].pct;
+      break;
+    }
+  }
+  setDB(db); recalcDrum();
+};
+
+function buildDrumDoseUI(){
+  var db=ensureDB();
+  var d=db.drumDraft;
+  if(!d || !d.doses || !d.doses.length){
+    byId("drumDoseWrap").innerHTML="No drum doses. Load selection.";
+    return;
+  }
+
+  var groups={};
+  for(var i=0;i<d.doses.length;i++){
+    var dose=d.doses[i];
+    if(!groups[dose.chemId]) groups[dose.chemId]=[];
+    groups[dose.chemId].push(dose);
+  }
+
+  var chemIds=[];
+  for(var cid in groups) if(groups.hasOwnProperty(cid)) chemIds.push(cid);
+  chemIds.sort(function(a,b){
+    var ca=getById(db.drumChems,a), cb=getById(db.drumChems,b);
+    var sa=(ca&&ca.stage)?ca.stage:"Other", sb=(cb&&cb.stage)?cb.stage:"Other";
+    var ia=STAGES.indexOf(sa); if(ia<0) ia=999;
+    var ib=STAGES.indexOf(sb); if(ib<0) ib=999;
+    if(ia!==ib) return ia-ib;
+    var na=(ca&&ca.name)?String(ca.name).toLowerCase():"";
+    var nb=(cb&&cb.name)?String(cb.name).toLowerCase():"";
+    return na>nb?1:-1;
+  });
+
+  var html="";
+  for(var x=0;x<chemIds.length;x++){
+    var chem=getById(db.drumChems, chemIds[x]);
+    if(!chem) continue;
+    var doses=groups[chem.id];
+    var drumDate=(byId("drumDate").value||"").trim();
+    var rateShow=(db.drumDraft && db.drumDraft.forceLatestRates) ? chem.rate : getRateAt(chem, drumDate);
+
+    html+='<div class="card" style="margin-bottom:12px;">' +
+          '<b>'+esc(chem.name)+'</b> <span class="chip">Rate '+fix(rateShow,2)+'/kg</span>' +
+          '<div class="small">Multi-dose allowed.</div>' +
+          '<div style="overflow:auto;margin-top:10px;">' +
+          '<table><thead><tr><th>Stage</th><th class="right">%</th><th class="right">kg</th><th class="right">Cost</th><th class="right">Action</th></tr></thead><tbody>';
+
+    for(var j=0;j<doses.length;j++){
+      var dose=doses[j];
+      html+='<tr>' +
+        '<td>'+stageSelect("dStage_"+dose.doseId, dose.stage, "onDrumStageChange(\''+dose.doseId+'\')")+'</td>' +
+        '<td class="right"><input class="inlineInput" type="number" step="0.01" id="dPct_'+dose.doseId+'" value="'+esc(dose.pct)+'" oninput="onDrumPctChange(\''+dose.doseId+'\')"></td>' +
+        '<td class="right"><span id="dKg_'+dose.doseId+'">—</span></td>' +
+        '<td class="right"><span id="dCost_'+dose.doseId+'">—</span></td>' +
+        '<td class="right"><button class="danger miniBtn" onclick="deleteDrumDose(\''+dose.doseId+'\')">Delete</button></td>' +
+      '</tr>';
+    }
+
+    html+='</tbody></table></div>' +
+          '<div class="row"><button class="primary miniBtn" onclick="addDrumDose(\''+chem.id+'\')">+ Add dose</button></div>' +
+          '</div>';
+  }
+
+  byId("drumDoseWrap").innerHTML=html;
+  recalcDrum();
+}
+
+function recalcDrum(){
+  var db=ensureDB();
+  if(!db.drumDraft || !db.drumDraft.doses) return;
+
+  var pcs=parseInt(byId("drumPcs").value,10);
+  var baseKg=num(byId("drumBaseKg").value);
+
+  var totalCost=0, any=false;
+  var sum={};
+
+  for(var i=0;i<db.drumDraft.doses.length;i++){
+    var dose=db.drumDraft.doses[i];
+    var chem=getById(db.drumChems, dose.chemId);
+    if(!chem) continue;
+
+    var drumDate=(byId("drumDate").value||"").trim();
+    var rateUsed=(db.drumDraft && db.drumDraft.forceLatestRates) ? chem.rate : getRateAt(chem, drumDate);
+
+    var drumDate = (byId("drumDate").value||"").trim();
+    var rateUsed = (db.drumDraft && db.drumDraft.forceLatestRates) ? chem.rate : getRateAt(chem, drumDate);
+
+    var pct=num(byId("dPct_"+dose.doseId) ? byId("dPct_"+dose.doseId).value : dose.pct);
+    var qty=NaN, cost=NaN;
+
+    if(isFinite(baseKg)&&baseKg>0 && isFinite(pct) && pct>=0){
+      any=true;
+      qty=(baseKg*pct)/100.0;
+      cost=qty*rateUsed;
+      if(isFinite(cost)) totalCost+=cost;
+    }
+
+    var kgEl=byId("dKg_"+dose.doseId);
+    var cEl=byId("dCost_"+dose.doseId);
+    if(kgEl) kgEl.innerHTML=isFinite(qty)?qty.toFixed(2):"—";
+    if(cEl) cEl.innerHTML=isFinite(cost)?cost.toFixed(2):"—";
+
+    if(!sum[chem.id]) sum[chem.id]={name:chem.name,pct:0,kg:0,cost:0};
+    if(isFinite(pct)) sum[chem.id].pct+=pct;
+    if(isFinite(qty)) sum[chem.id].kg+=qty;
+    if(isFinite(cost)) sum[chem.id].cost+=cost;
+  }
+
+  byId("drumTotalCostOut").innerHTML = (any && isFinite(totalCost)) ? totalCost.toFixed(2) : "—";
+
+  var costPerPc=NaN;
+  if(isFinite(totalCost)&&totalCost>=0 && isFinite(pcs) && pcs>0) costPerPc = totalCost/pcs;
+  byId("drumCostPerPcOut").innerHTML = isFinite(costPerPc) ? costPerPc.toFixed(2) : "—";
+
+  if(!isFinite(pcs)||pcs<=0) byId("drumHint").innerHTML="Enter PCS used";
+  else if(!isFinite(baseKg)||baseKg<=0) byId("drumHint").innerHTML="Enter weighed base kg";
+  else if(!any) byId("drumHint").innerHTML="Enter % values";
+  else byId("drumHint").innerHTML="OK ✅";
+
+  var keys=[];
+  for(var k in sum) if(sum.hasOwnProperty(k)) keys.push(k);
+  keys.sort(function(a,b){
+    var na=String(sum[a].name||"").toLowerCase();
+    var nb=String(sum[b].name||"").toLowerCase();
+    return na>nb?1:-1;
+  });
+
+  var sb=byId("drumSumBody");
+  if(!keys.length) sb.innerHTML='<tr><td colspan="4" class="small">—</td></tr>';
+  else{
+    var html="";
+    for(var j=0;j<keys.length;j++){
+      var s=sum[keys[j]];
+      html+='<tr><td>'+esc(s.name)+'</td><td class="right">'+fix(s.pct,2)+'</td><td class="right">'+fix(s.kg,2)+'</td><td class="right">'+fix(s.cost,2)+'</td></tr>';
+    }
+    sb.innerHTML=html;
+  }
+}
+byId("drumPcs").addEventListener("input", recalcDrum);
+byId("drumBaseKg").addEventListener("input", recalcDrum);
+
+function startEditDrum(drumId){
+  var db=ensureDB();
+  var drum=getById(db.drums, drumId);
+  if(!drum){ alert("Drum not found"); return; }
+
+  db.drumEditId = drumId;
+
+  // load wetblue mix into draft
+  var all = (drum.wbAllocs && drum.wbAllocs.length) ? drum.wbAllocs : [{wbId:drum.wbId, wbLotNo:drum.wbLotNo, pcs:drum.pcs}];
+  db.drumWbDraft = [];
+  for(var i=0;i<all.length;i++){
+    db.drumWbDraft.push({wbId:all[i].wbId, pcs:String(all[i].pcs), lotNo:all[i].wbLotNo});
+  }
+
+  setDB(db);
+  showTab("drum");
+
+  byId("drumDate").value = drum.date || "";
+  byId("drumNo").value = drum.drumNo || "";
+
+  // refresh selector + mix table
+  fillWetblueSelect("drumLotAddSel", "");
+  renderDrumWbMix();
+
+  byId("drumBaseKg").value = drum.baseKg;
+
+  fillArticlesSelect("drumArticleSel", drum.articleId);
+  fillColorsSelect("drumColorSel", drum.colorId);
+
+  var doses=[];
+  for(var j=0;j<(drum.lines||[]).length;j++){
+    var L=drum.lines[j];
+    doses.push({ doseId: nowId("dd"), chemId: L.chemId, stage: L.stage||"Other", pct: (L.pct==null?"":String(L.pct)) });
+  }
+  db=ensureDB();
+  db.drumDraft = { doses:doses };
+  setDB(db);
+
+  renderDrumPage();
+}
+
+function saveOrUpdateDrum(){
+  var db=ensureDB();
+  if(db.drumEditId) return updateDrum(db.drumEditId);
+  return saveNewDrum();
+}
+function parseDateAny(s){
+  s=String(s||"").trim();
+  if(!s) return NaN;
+  // dd-mm-yyyy or dd/mm/yyyy
+  var m = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})$/);
+  if(m){
+    var dd=parseInt(m[1],10), mm=parseInt(m[2],10), yy=parseInt(m[3],10);
+    if(yy<100) yy+=2000;
+    return new Date(yy, mm-1, dd).getTime();
+  }
+  // yyyy-mm-dd
+  var m2 = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+  if(m2){
+    return new Date(parseInt(m2[1],10), parseInt(m2[2],10)-1, parseInt(m2[3],10)).getTime();
+  }
+  var t = Date.parse(s);
+  return isFinite(t)?t:NaN;
+}
+function todayDMY(){
+  var d=new Date();
+  var dd=("0"+d.getDate()).slice(-2);
+  var mm=("0"+(d.getMonth()+1)).slice(-2);
+  var yy=d.getFullYear();
+  return dd+"-"+mm+"-"+yy;
+}
+function ensureRateHistory(obj){
+  if(!obj) return;
+  if(!obj.rateHistory || !obj.rateHistory.length){
+    var r = isFinite(obj.rate)?obj.rate:0;
+    obj.rateHistory=[{from: todayDMY(), ts: parseDateAny(todayDMY()), rate:r}];
+  } else {
+    for(var i=0;i<obj.rateHistory.length;i++){
+      if(!isFinite(obj.rateHistory[i].ts)) obj.rateHistory[i].ts = parseDateAny(obj.rateHistory[i].from);
+    }
+  }
+}
+function getRateAt(obj, dateStr){
+  if(!obj) return NaN;
+  ensureRateHistory(obj);
+  var ts = parseDateAny(dateStr);
+  if(!isFinite(ts)) ts = parseDateAny(todayDMY());
+  var best = null;
+  for(var i=0;i<obj.rateHistory.length;i++){
+    var h=obj.rateHistory[i];
+    if(!isFinite(h.ts)) h.ts = parseDateAny(h.from);
+    if(isFinite(h.ts) && h.ts <= ts){
+      if(!best || h.ts > best.ts) best = h;
+    }
+  }
+  return best ? best.rate : obj.rate;
+}
+
+function calcDrumFromUI(){
+  var db=ensureDB();
+  var date=(byId("drumDate").value||"").trim();
+
+  var pcs=parseInt(byId("drumPcs").value,10);
+  var baseKg=num(byId("drumBaseKg").value);
+  var artId=byId("drumArticleSel").value;
+  var colId=byId("drumColorSel").value;
+
+  if(!db.drumWbDraft || !db.drumWbDraft.length) return {ok:false, msg:"Add at least 1 Wet Blue lot to the drum mix."};
+  if(!db.drumDraft || !db.drumDraft.doses || !db.drumDraft.doses.length) return {ok:false, msg:"Load drum chemicals first."};
+  if(!isFinite(pcs)||pcs<=0) return {ok:false, msg:"Total PCS must be > 0"};
+  if(!isFinite(baseKg)||baseKg<=0) return {ok:false, msg:"Enter weighed kg"};
+  if(!artId) return {ok:false, msg:"Select Article"};
+  if(!colId) return {ok:false, msg:"Select Color"};
+
+  // validate lots + build allocations
+  var allocations=[];
+  var totalPcs=0;
+  for(var a=0;a<db.drumWbDraft.length;a++){
+    var item=db.drumWbDraft[a];
+    var w=getById(db.wetblue, item.wbId);
+    if(!w) return {ok:false, msg:"Wet blue lot missing in drum mix"};
+    var p=parseInt(item.pcs,10);
+    if(!isFinite(p)||p<=0) return {ok:false, msg:"Invalid PCS in drum mix"};
+    allocations.push({wbId:w.id, wbLotNo:w.lotNo, pcs:p});
+    totalPcs += p;
+  }
+  if(totalPcs !== pcs) pcs = totalPcs; // safety
+
+  var art=getById(db.articles, artId);
+  var col=getById(db.colors, colId);
+
+  var lines=[];
+  var totalCost=0;
+
+  for(var i=0;i<db.drumDraft.doses.length;i++){
+    var dose=db.drumDraft.doses[i];
+    var chem=getById(db.drumChems, dose.chemId);
+    if(!chem) continue;
+
+    var drumDate=(byId("drumDate").value||"").trim();
+    var rateUsed=(db.drumDraft && db.drumDraft.forceLatestRates) ? chem.rate : getRateAt(chem, drumDate);
+
+    var pct=num(byId("dPct_"+dose.doseId) ? byId("dPct_"+dose.doseId).value : dose.pct);
+    var stage=byId("dStage_"+dose.doseId) ? byId("dStage_"+dose.doseId).value : (dose.stage||"Other");
+
+    var rate = getRateAt(chem, date);
+    var qty=null, cost=null, pctVal=null;
+    if(isFinite(pct) && pct>=0){
+      pctVal=pct;
+      qty=(baseKg*pct)/100.0;
+      cost=qty*rate;
+      if(isFinite(cost)) totalCost += cost;
+    }
+    lines.push({ chemId:chem.id, name:chem.name, stage:stage, rate:rate, pct:pctVal, qtyKg:(qty!=null&&isFinite(qty))?qty:null, cost:(cost!=null&&isFinite(cost))?cost:null });
+  }
+
+  return { ok:true, allocations:allocations, pcs:pcs, baseKg:baseKg, artId:artId, artName:art?art.name:"", colId:colId, colName:col?col.name:"",
+    totalCost:totalCost, costPerPc:(totalCost/pcs), lines:lines };
+}
+function saveNewDrum(){
+  var db=ensureDB();
+  var date=(byId("drumDate").value||"").trim();
+  var drumNo=(byId("drumNo").value||"").trim();
+
+  var calc=calcDrumFromUI();
+  if(!calc.ok){ alert(calc.msg); return; }
+
+  // validate availability per lot
+  for(var i=0;i<calc.allocations.length;i++){
+    var a=calc.allocations[i];
+    var wb=getById(db.wetblue, a.wbId);
+    if(!wb){ alert("Wet blue lot missing"); return; }
+    var needHide = sidesToHide(a.pcs);
+    if(wb.remainPcs + 1e-9 < needHide){ alert("Not enough remaining PCS in lot "+wb.lotNo+" (need "+fix(needHide,1)+" hide)"); return; }
+  }
+
+  var drumId=nowId("drm");
+  var wbLabel = (calc.allocations.length===1)
+    ? (calc.allocations[0].wbLotNo)
+    : ("MIX: " + calc.allocations.map(function(x){return x.wbLotNo+":"+x.pcs;}).join(", "));
+
+  db.drums.unshift({
+    id:drumId, date:date, drumNo:drumNo,
+    wbId:(calc.allocations[0].wbId||""), wbLotNo:wbLabel,
+    wbAllocs:calc.allocations, // [{wbId,wbLotNo,pcs}]
+    pcs:calc.pcs, baseKg:calc.baseKg,
+    articleId:calc.artId, articleName:calc.artName,
+    colorId:calc.colId, colorName:calc.colName,
+    totalCost:calc.totalCost, costPerPc:calc.costPerPc,
+    lines:calc.lines
+  });
+
+  // consume wetblue pcs
+  for(var j=0;j<calc.allocations.length;j++){
+    var al=calc.allocations[j];
+    var w=getById(db.wetblue, al.wbId);
+    if(w) w.remainPcs = w.remainPcs - al.pcs;
+  }
+
+  // create crust lot (can be mixed)
+  var crustId=nowId("cr");
+  var crustLotNo = "C-" + (drumNo ? drumNo : drumId.substring(0,6));
+  db.crust.unshift({
+    id:crustId, crustLotNo:crustLotNo, createdDate:date,
+    wbId:(calc.allocations[0].wbId||""), wbLotNo:wbLabel,
+    wbAllocs:calc.allocations.slice(0),
+    wbRemainAllocs:calc.allocations.map(function(x){ return {wbId:x.wbId, wbLotNo:x.wbLotNo, pcs:x.pcs}; }),
+    drumId:drumId, drumNo:drumNo,
+    articleId:calc.artId, articleName:calc.artName,
+    colorId:calc.colId, colorName:calc.colName,
+    totalPcs:calc.pcs, remainPcs:calc.pcs,
+    costPerPc:calc.costPerPc,
+    totalDrumCost:calc.totalCost
+  });
+
+  db.drumDraft=null;
+  if(!db.drumWbDraft) db.drumWbDraft=[];
+  db.selDrumChem=[];
+  setDB(db);
+
+  alert("Drum saved ✅ Crust lot created ✅");
+  showTab("crust");
+}
+
+function allocProportional(allocs, totalToAlloc){
+  // allocs: [{wbId, wbLotNo, pcs}] with pcs >=0
+  var n=allocs.length;
+  var sum=0;
+  for(var i=0;i<n;i++) sum += allocs[i].pcs;
+  if(sum<=0){ return allocs.map(function(a){return {wbId:a.wbId, wbLotNo:a.wbLotNo, pcs:0};}); }
+
+  var raw=[], out=[], used=0;
+  for(var j=0;j<n;j++){
+    var r = (allocs[j].pcs / sum) * totalToAlloc;
+    var floor = Math.floor(r);
+    raw.push({idx:j, frac:(r-floor), pcs:floor});
+    out.push({wbId:allocs[j].wbId, wbLotNo:allocs[j].wbLotNo, pcs:floor});
+    used += floor;
+  }
+  var remain = totalToAlloc - used;
+  raw.sort(function(a,b){ return b.frac - a.frac; });
+  for(var k=0;k<raw.length && remain>0;k++){
+    out[raw[k].idx].pcs += 1;
+    remain -= 1;
+  }
+  return out;
+}
+function sumAllocs(allocs){ var s=0; for(var i=0;i<allocs.length;i++) s+=allocs[i].pcs; return s; }
+function normalizeAllocs(allocs){
+  var m={};
+  for(var i=0;i<allocs.length;i++){
+    var a=allocs[i];
+    if(!m[a.wbId]) m[a.wbId]={wbId:a.wbId, wbLotNo:a.wbLotNo, pcs:0};
+    m[a.wbId].pcs += a.pcs;
+  }
+  var out=[];
+  for(var k in m) if(m.hasOwnProperty(k)) out.push(m[k]);
+  out.sort(function(a,b){ return String(a.wbLotNo).toLowerCase()>String(b.wbLotNo).toLowerCase()?1:-1; });
+  return out;
+}
+
+function updateDrum(drumId){
+  var db=ensureDB();
+  var drum=getById(db.drums, drumId);
+  if(!drum){ alert("Drum not found"); return; }
+
+  var date=(byId("drumDate").value||"").trim();
+  var drumNo=(byId("drumNo").value||"").trim();
+  var calc=calcDrumFromUI();
+  if(!calc.ok){ alert(calc.msg); return; }
+
+  var crust=null;
+  for(var i=0;i<db.crust.length;i++) if(db.crust[i].drumId===drumId) { crust=db.crust[i]; break; }
+  if(!crust){ alert("Linked crust lot not found for this drum."); return; }
+
+  var usedPcs = crust.totalPcs - crust.remainPcs;
+  if(calc.pcs < usedPcs){ alert("Cannot reduce drum PCS below already-used PCS ("+usedPcs+")."); return; }
+
+  // restore old wetblue consumption
+  var oldAllocs = drum.wbAllocs && drum.wbAllocs.length ? drum.wbAllocs : [{wbId:drum.wbId, wbLotNo:drum.wbLotNo, pcs:drum.pcs}];
+  oldAllocs = normalizeAllocs(oldAllocs);
+  for(var r=0;r<oldAllocs.length;r++){
+    var ow=getById(db.wetblue, oldAllocs[r].wbId);
+    if(ow) ow.remainPcs = normalizeHide(ow.remainPcs + sidesToHide(oldAllocs[r].pcs));
+  }
+
+  // check + consume new allocations
+  var newAllocs = normalizeAllocs(calc.allocations);
+  for(var c=0;c<newAllocs.length;c++){
+    var nw=getById(db.wetblue, newAllocs[c].wbId);
+    if(!nw){
+      // rollback restore removal is not needed (we already restored); just re-consume old so system state unchanged
+      for(var rr=0;rr<oldAllocs.length;rr++){
+        var ow2=getById(db.wetblue, oldAllocs[rr].wbId);
+        if(ow2) ow2.remainPcs = normalizeHide(ow2.remainPcs - sidesToHide(oldAllocs[rr].pcs));
+      }
+      alert("Wet blue lot missing");
+      return;
+    }
+    var __needHide = sidesToHide(newAllocs[c].pcs);
+  if(nw.remainPcs + 1e-9 < __needHide){
+      // rollback: re-consume old
+      for(var rr2=0;rr2<oldAllocs.length;rr2++){
+        var ow3=getById(db.wetblue, oldAllocs[rr2].wbId);
+        if(ow3) ow3.remainPcs = normalizeHide(ow3.remainPcs - sidesToHide(oldAllocs[rr2].pcs));
+      }
+      alert("Not enough remaining PCS in lot "+nw.lotNo+" for new drum mix.");
+      return;
+    }
+  }
+  for(var cc=0;cc<newAllocs.length;cc++){
+    var nw2=getById(db.wetblue, newAllocs[cc].wbId);
+    if(nw2) nw2.remainPcs = normalizeHide(nw2.remainPcs - sidesToHide(newAllocs[cc].pcs));
+  }
+
+  var wbLabel = (newAllocs.length===1)
+    ? (newAllocs[0].wbLotNo)
+    : ("MIX: " + newAllocs.map(function(x){return x.wbLotNo+":"+x.pcs;}).join(", "));
+
+  // update drum header
+  drum.date=date; drum.drumNo=drumNo;
+  drum.wbId=(newAllocs[0].wbId||""); drum.wbLotNo=wbLabel;
+  drum.wbAllocs=newAllocs;
+  drum.pcs=calc.pcs; drum.baseKg=calc.baseKg;
+  drum.articleId=calc.artId; drum.articleName=calc.artName;
+  drum.colorId=calc.colId; drum.colorName=calc.colName;
+  drum.totalCost=calc.totalCost; drum.costPerPc=calc.costPerPc;
+  drum.lines=calc.lines;
+
+  // recalc crust allocations remaining after already-used pcs
+  var usedAlloc = allocProportional(newAllocs, usedPcs);
+  var remainAllocs=[];
+  for(var z=0;z<newAllocs.length;z++){
+    var usedFor = 0;
+    for(var u=0;u<usedAlloc.length;u++) if(usedAlloc[u].wbId===newAllocs[z].wbId){ usedFor = usedAlloc[u].pcs; break; }
+    remainAllocs.push({wbId:newAllocs[z].wbId, wbLotNo:newAllocs[z].wbLotNo, pcs:(newAllocs[z].pcs - usedFor)});
+  }
+
+  // update crust
+  crust.createdDate = date;
+  crust.wbId = (newAllocs[0].wbId||""); crust.wbLotNo = wbLabel;
+  crust.wbAllocs = newAllocs;
+  crust.wbRemainAllocs = remainAllocs;
+  crust.drumNo = drumNo;
+  crust.articleId = calc.artId; crust.articleName = calc.artName;
+  crust.colorId = calc.colId; crust.colorName = calc.colName;
+  crust.totalPcs = calc.pcs;
+  crust.remainPcs = calc.pcs - usedPcs;
+  crust.costPerPc = calc.costPerPc;
+  crust.totalDrumCost = calc.totalCost;
+
+  // update linked finishing + finished costs (allocated drum cost)
+  for(var f=0; f<db.finishing.length; f++){
+    var fin=db.finishing[f];
+    if(fin.crustId !== crust.id) continue;
+    fin.wbId = crust.wbId; fin.wbLotNo = crust.wbLotNo;
+    fin.wbAllocs = fin.wbAllocs || null; // keep their allocation snapshot
+    fin.drumAllocCost = fin.pcs * crust.costPerPc;
+    fin.totalCost = fin.drumAllocCost + (isFinite(fin.finChemCost)?fin.finChemCost:0);
+    fin.costPerPc = fin.totalCost / fin.pcs;
+  }
+  for(var ff=0; ff<db.finished.length; ff++){
+    var finLot=db.finished[ff];
+    if(finLot.crustId !== crust.id) continue;
+
+    finLot.wbId = crust.wbId; finLot.wbLotNo = crust.wbLotNo;
+    finLot.drumAllocCost = finLot.pcs * crust.costPerPc;
+    finLot.totalCost = finLot.drumAllocCost + (isFinite(finLot.finChemCost)?finLot.finChemCost:0) + (isFinite(finLot.jobCost)?finLot.jobCost:0);
+    finLot.costPerPc = finLot.totalCost / finLot.pcs;
+
+    if(isFinite(finLot.sqft) && finLot.sqft>0){
+      finLot.costPerSqft = finLot.totalCost / finLot.sqft;
+      finLot.drumCostPerSqft = finLot.drumAllocCost / finLot.sqft;
+      finLot.finCostPerSqft = (isFinite(finLot.finChemCost)?finLot.finChemCost:0) / finLot.sqft;
+      finLot.jobCostPerSqft = (isFinite(finLot.jobCost)?finLot.jobCost:0) / finLot.sqft;
+    }else{
+      finLot.costPerSqft = null;
+      finLot.drumCostPerSqft = null;
+      finLot.finCostPerSqft = null;
+      finLot.jobCostPerSqft = null;
+    }
+  }
+
+  db.drumEditId=null;
+  db.drumDraft=null;
+  if(!db.drumWbDraft) db.drumWbDraft=[];
+  db.selDrumChem=[];
+
+  setDB(db);
+  alert("Drum updated ✅ All linked costs recalculated ✅");
+  showTab("drum");
+}
+
+/* ================= Crust Inventory ================= */
+function renderCrust(){
+  var db=ensureDB();
+  var cb=byId("crustBody");
+  if(!db.crust.length) cb.innerHTML='<tr><td colspan="9" class="small">No crust lots yet.</td></tr>';
+  else{
+    var html="";
+    for(var i=0;i<db.crust.length;i++){
+      var c=db.crust[i];
+      var remVal = (isFinite(c.costPerPc)?(c.costPerPc*c.remainPcs):0);
+      html+='<tr>' +
+        '<td>'+esc(c.crustLotNo)+'</td>' +
+        '<td>'+esc(c.wbLotNo)+'</td>' +
+        '<td>'+esc(c.drumNo||"")+'</td>' +
+        '<td>'+esc(c.articleName)+'</td>' +
+        '<td>'+esc(c.colorName)+'</td>' +
+        '<td class="right">'+c.totalPcs+'</td>' +
+        '<td class="right">'+c.remainPcs+'</td>' +
+        '<td class="right">'+(isFinite(c.costPerPc)?c.costPerPc.toFixed(2):"")+'</td>' +
+        '<td class="right">'+(isFinite(remVal)?remVal.toFixed(2):"")+'</td>' +
+      '</tr>';
+    }
+    cb.innerHTML=html;
+  }
+}
+
+/* ================= Finishing Process (NEW+EDIT) ================= */
+function renderFinishPage(){
+  var db=ensureDB();
+  fillCrustSelect("finCrustSel", "");
+  fillArticlesSelect("finArticleSel", "");
+  fillColorsSelect("finColorSel", "");
+
+  if(byId("finModeChip")) byId("finModeChip").innerHTML = db.finEditId ? "Mode: Editing" : "Mode: New";
+
+  
+  var b2=byId("finApplyLatestBtn");
+  if(b2) b2.style.display = db.finEditId ? "inline-block" : "none";
+  if(!db.finEditId && db.finDraft){ db.finDraft.forceLatestRates=false; setDB(db);} 
+if(db.finDraft) buildFinDoseUI();
+  else{
+    byId("finDoseWrap").innerHTML="Select finishing chemicals in Masters → Finishing Chemical Master.";
+    byId("finSumBody").innerHTML='<tr><td colspan="3" class="small">—</td></tr>';
+    byId("finDrumAllocOut").innerHTML="—";
+    byId("finChemCostOut").innerHTML="—";
+    byId("finTotalCostOut").innerHTML="—";
+    byId("finCostPerPcOut").innerHTML="—";
+  }
+  renderFinBatchesList();
+}
+function applyCrustDefaultsToFinishing(){
+  var db=ensureDB();
+  var crustId=byId("finCrustSel").value;
+  var crust=getById(db.crust, crustId);
+  if(!crust){ alert("Select a crust lot"); return; }
+  fillArticlesSelect("finArticleSel", crust.articleId);
+  fillColorsSelect("finColorSel", crust.colorId);
+  recalcFinishing();
+}
+
+function buildFinDraftFromSelection(){
+  var db=ensureDB();
+  if(!db.selFinishChem.length){ alert("Select finishing chemicals in Masters first."); return; }
+
+  if(db.finDraft && db.finDraft.doses && db.finDraft.doses.length){
+    for(var i=0;i<db.selFinishChem.length;i++){
+      var chem=getById(db.finishChems, db.selFinishChem[i]);
+      if(!chem) continue;
+      db.finDraft.doses.push({
+        doseId: nowId("fd"),
+        chemId: chem.id,
+        kg: ""
+      });
+    }
+    db.selFinishChem = [];
+    setDB(db);
+    buildFinDoseUI();
+    return;
+  }
+
+  var doses=[];
+  for(var j=0;j<db.selFinishChem.length;j++){
+    var c=getById(db.finishChems, db.selFinishChem[j]);
+    if(!c) continue;
+    doses.push({ doseId: nowId("fd"), chemId: c.id, kg: "" });
+  }
+  db.finDraft={ doses:doses };
+  db.selFinishChem = [];
+  setDB(db);
+  buildFinDoseUI();
+}
+
+function clearFinDraft(){
+  var db=ensureDB();
+  if(db.finEditId) db.finEditId=null;
+  db.finDraft=null;
+  setDB(db);
+
+  byId("finDate").value="";
+  byId("finBatchNo").value="";
+  byId("finPcs").value="";
+
+  byId("finDoseWrap").innerHTML="Cleared. Load selected finishing chemicals again.";
+  byId("finSumBody").innerHTML='<tr><td colspan="3" class="small">—</td></tr>';
+  byId("finDrumAllocOut").innerHTML="—";
+  byId("finChemCostOut").innerHTML="—";
+  byId("finTotalCostOut").innerHTML="—";
+  byId("finCostPerPcOut").innerHTML="—";
+  byId("finHint").innerHTML="Enter PCS + kg used to calculate";
+  renderFinishPage();
+}
+function addFinDose(chemId){
+  var db=ensureDB();
+  if(!db.finDraft) return;
+  db.finDraft.doses.push({doseId:nowId("fd"), chemId:chemId, kg:""});
+  setDB(db); buildFinDoseUI();
+}
+function deleteFinDose(doseId){
+  var db=ensureDB();
+  if(!db.finDraft) return;
+  var out=[];
+  for(var i=0;i<db.finDraft.doses.length;i++){
+    if(db.finDraft.doses[i].doseId!==doseId) out.push(db.finDraft.doses[i]);
+  }
+  db.finDraft.doses=out; setDB(db); buildFinDoseUI();
+}
+window.onFinKgChange = function(doseId){
+  var db=ensureDB();
+  if(!db.finDraft) return;
+  var el=byId("fKg_"+doseId);
+  for(var i=0;i<db.finDraft.doses.length;i++){
+    if(db.finDraft.doses[i].doseId===doseId){
+      db.finDraft.doses[i].kg = el ? el.value : db.finDraft.doses[i].kg;
+      break;
+    }
+  }
+  setDB(db);
+  recalcFinishing();
+};
+
+function buildFinDoseUI(){
+  var db=ensureDB();
+  var d=db.finDraft;
+  if(!d || !d.doses || !d.doses.length){
+    byId("finDoseWrap").innerHTML="No finishing doses. Load selection.";
+    return;
+  }
+
+  var groups={};
+  for(var i=0;i<d.doses.length;i++){
+    var dose=d.doses[i];
+    if(!groups[dose.chemId]) groups[dose.chemId]=[];
+    groups[dose.chemId].push(dose);
+  }
+
+  var chemIds=[];
+  for(var cid in groups) if(groups.hasOwnProperty(cid)) chemIds.push(cid);
+  chemIds.sort(function(a,b){
+    var ca=getById(db.finishChems,a), cb=getById(db.finishChems,b);
+    var na=(ca&&ca.name)?String(ca.name).toLowerCase():"";
+    var nb=(cb&&cb.name)?String(cb.name).toLowerCase():"";
+    return na>nb?1:-1;
+  });
+
+  var html="";
+  for(var x=0;x<chemIds.length;x++){
+    var chem=getById(db.finishChems, chemIds[x]);
+    if(!chem) continue;
+    var doses=groups[chem.id];
+    var finDate=(byId("finDate").value||"").trim();
+    var rateShow=(db.finDraft && db.finDraft.forceLatestRates) ? chem.rate : getRateAt(chem, finDate);
+
+    html+='<div class="card" style="margin-bottom:12px;">' +
+          '<b>'+esc(chem.name)+'</b> <span class="chip">Rate '+fix(rateShow,2)+'/kg</span>' +
+          '<div class="small">Multi-dose allowed.</div>' +
+          '<div style="overflow:auto;margin-top:10px;">' +
+          '<table><thead><tr><th class="right">kg</th><th class="right">Cost</th><th class="right">Action</th></tr></thead><tbody>';
+
+    for(var j=0;j<doses.length;j++){
+      var dose=doses[j];
+      html+='<tr>' +
+        '<td class="right"><input class="inlineInput" type="number" step="0.01" id="fKg_'+dose.doseId+'" value="'+esc(dose.kg)+'" oninput="onFinKgChange(\''+dose.doseId+'\')"></td>' +
+        '<td class="right"><span id="fCost_'+dose.doseId+'">—</span></td>' +
+        '<td class="right"><button class="danger miniBtn" onclick="deleteFinDose(\''+dose.doseId+'\')">Delete</button></td>' +
+      '</tr>';
+    }
+
+    html+='</tbody></table></div>' +
+          '<div class="row"><button class="primary miniBtn" onclick="addFinDose(\''+chem.id+'\')">+ Add dose</button></div>' +
+          '</div>';
+  }
+
+  byId("finDoseWrap").innerHTML=html;
+  recalcFinishing();
+}
+
+function recalcFinishing(){
+  var db=ensureDB();
+  if(!db.finDraft || !db.finDraft.doses) return;
+
+  var crustId=byId("finCrustSel").value;
+  var crust=getById(db.crust, crustId);
+  var pcs=parseInt(byId("finPcs").value,10);
+
+  var drumAlloc=NaN;
+  if(crust && isFinite(pcs) && pcs>0 && isFinite(crust.costPerPc)) drumAlloc = pcs * crust.costPerPc;
+
+  var finChemCost=0, any=false;
+  var sum={};
+
+  for(var i=0;i<db.finDraft.doses.length;i++){
+    var dose=db.finDraft.doses[i];
+    var chem=getById(db.finishChems, dose.chemId);
+    if(!chem) continue;
+
+    var finDate=(byId("finDate").value||"").trim();
+    var rateUsed=(db.finDraft && db.finDraft.forceLatestRates) ? chem.rate : getRateAt(chem, finDate);
+
+    var kg=num(byId("fKg_"+dose.doseId) ? byId("fKg_"+dose.doseId).value : dose.kg);
+    var cost=NaN;
+    if(isFinite(kg) && kg>=0){
+      any=true;
+      cost = kg * rateUsed;
+      if(isFinite(cost)) finChemCost += cost;
+    }
+    var cEl=byId("fCost_"+dose.doseId);
+    if(cEl) cEl.innerHTML = isFinite(cost) ? cost.toFixed(2) : "—";
+
+    if(!sum[chem.id]) sum[chem.id]={name:chem.name,kg:0,cost:0};
+    if(isFinite(kg)) sum[chem.id].kg += kg;
+    if(isFinite(cost)) sum[chem.id].cost += cost;
+  }
+
+  var total=NaN;
+  if(isFinite(drumAlloc)) total = drumAlloc + finChemCost;
+
+  byId("finDrumAllocOut").innerHTML = isFinite(drumAlloc) ? drumAlloc.toFixed(2) : "—";
+  byId("finChemCostOut").innerHTML = (any && isFinite(finChemCost)) ? finChemCost.toFixed(2) : "—";
+  byId("finTotalCostOut").innerHTML = isFinite(total) ? total.toFixed(2) : "—";
+
+  var costPerPc=NaN;
+  if(isFinite(total) && isFinite(pcs) && pcs>0) costPerPc = total/pcs;
+  byId("finCostPerPcOut").innerHTML = isFinite(costPerPc) ? costPerPc.toFixed(2) : "—";
+
+  if(!crust) byId("finHint").innerHTML="Select a crust lot";
+  else if(!isFinite(pcs)||pcs<=0) byId("finHint").innerHTML="Enter PCS used";
+  else if(crust.remainPcs < pcs) byId("finHint").innerHTML="PCS exceeds remaining crust PCS";
+  else if(!any) byId("finHint").innerHTML="Enter finishing kg values";
+  else byId("finHint").innerHTML="OK ✅";
+
+  var keys=[];
+  for(var k in sum) if(sum.hasOwnProperty(k)) keys.push(k);
+  keys.sort(function(a,b){
+    var na=String(sum[a].name||"").toLowerCase();
+    var nb=String(sum[b].name||"").toLowerCase();
+    return na>nb?1:-1;
+  });
+  var sb=byId("finSumBody");
+  if(!keys.length) sb.innerHTML='<tr><td colspan="3" class="small">—</td></tr>';
+  else{
+    var html="";
+    for(var j=0;j<keys.length;j++){
+      var s=sum[keys[j]];
+      html+='<tr><td>'+esc(s.name)+'</td><td class="right">'+fix(s.kg,2)+'</td><td class="right">'+fix(s.cost,2)+'</td></tr>';
+    }
+    sb.innerHTML=html;
+  }
+}
+byId("finPcs").addEventListener("input", recalcFinishing);
+byId("finCrustSel").addEventListener("change", function(){ applyCrustDefaultsToFinishing(); recalcFinishing(); });
+
+function saveOrUpdateFinishing(){
+  var db=ensureDB();
+  if(db.finEditId) return updateFinishing(db.finEditId);
+  return saveFinishing();
+}
+
+function saveFinishing(){
+  var db=ensureDB();
+  if(!db.finDraft || !db.finDraft.doses || !db.finDraft.doses.length){ alert("Load finishing chemicals first."); return; }
+
+  var date=(byId("finDate").value||"").trim();
+  var batchNo=(byId("finBatchNo").value||"").trim();
+  var crustId=byId("finCrustSel").value;
+  var pcs=parseInt(byId("finPcs").value,10);
+  var artId=byId("finArticleSel").value;
+  var colId=byId("finColorSel").value;
+
+  var crust=getById(db.crust, crustId);
+  if(!crust){ alert("Select crust lot"); return; }
+  if(!isFinite(pcs)||pcs<=0){ alert("Enter PCS used"); return; }
+  if(crust.remainPcs < pcs){ alert("PCS exceeds remaining in crust lot"); return; }
+  if(!artId){ alert("Select Article"); return; }
+  if(!colId){ alert("Select Color"); return; }
+
+  var art=getById(db.articles, artId);
+  var col=getById(db.colors, colId);
+
+  var drumAlloc = pcs * crust.costPerPc;
+
+  var lines=[];
+  var finChemCost=0;
+
+  for(var i=0;i<db.finDraft.doses.length;i++){
+    var dose=db.finDraft.doses[i];
+    var chem=getById(db.finishChems, dose.chemId);
+    if(!chem) continue;
+
+    var finDate=(byId("finDate").value||"").trim();
+    var rateUsed=(db.finDraft && db.finDraft.forceLatestRates) ? chem.rate : getRateAt(chem, finDate);
+
+    var finDate=(byId("finDate").value||"").trim();
+    var rateUsed=(db.finDraft && db.finDraft.forceLatestRates) ? chem.rate : getRateAt(chem, finDate);
+
+    var kg=num(byId("fKg_"+dose.doseId) ? byId("fKg_"+dose.doseId).value : dose.kg);
+    var cost=null, kgVal=null;
+    if(isFinite(kg) && kg>=0){
+      kgVal=kg;
+      cost=kg*rateUsed;
+      if(isFinite(cost)) finChemCost += cost;
+    }
+    lines.push({ chemId:chem.id, name:chem.name, rate:rateUsed, kg:kgVal, cost:(cost!=null&&isFinite(cost))?cost:null });
+  }
+
+  var totalCost = drumAlloc + finChemCost;
+  var costPerPc = totalCost/pcs;
+
+  var finId=nowId("fin");
+  db.finishing.unshift({
+    id:finId, date:date, batchNo:batchNo,
+    crustId:crust.id, crustLotNo:crust.crustLotNo,
+    wbId:crust.wbId, wbLotNo:crust.wbLotNo,
+    pcs:pcs,
+    articleId:artId, articleName:art?art.name:"",
+    colorId:colId, colorName:col?col.name:"",
+    drumAllocCost:drumAlloc, finChemCost:finChemCost,
+    totalCost:totalCost, costPerPc:costPerPc,
+    lines:lines
+  });
+
+  crust.remainPcs = crust.remainPcs - pcs;
+
+  var finishedId=nowId("fdn");
+  var finishedLotNo = (batchNo ? batchNo : ("F-"+finishedId.substring(0,6)));
+  db.finished.unshift({
+    id:finishedId,
+    date:date,
+    finishedLotNo:finishedLotNo,
+    finishingId:finId,
+    crustId:crust.id,
+    crustLotNo:crust.crustLotNo,
+    wbId:crust.wbId,
+    wbLotNo:crust.wbLotNo,
+    pcs:pcs,
+    articleName:art?art.name:"",
+    colorName:col?col.name:"",
+    drumAllocCost:drumAlloc,
+    finChemCost:finChemCost,
+    totalCost:totalCost,
+    costPerPc:costPerPc,
+    sqft:null,
+    costPerSqft:null,
+    drumCostPerSqft:null,
+    finCostPerSqft:null
+  });
+
+  db.selFinishChem=[];
+  db.finDraft=null;
+
+  setDB(db);
+  alert("Finishing saved ✅ Finished lot created ✅");
+  showTab("finished");
+}
+
+/* ====== FINISH LIST (EDIT button only, editing function removed for brevity) ====== */
+function renderFinBatchesList(){
+  var db=ensureDB();
+  var tb=byId("finBatchesBody");
+  if(!db.finishing.length){
+    tb.innerHTML='<tr><td colspan="8" class="small">No finishing batches yet.</td></tr>';
+    return;
+  }
+  var html="";
+  for(var i=0;i<db.finishing.length;i++){
+    var f=db.finishing[i];
+    html+='<tr>' +
+      '<td>'+esc(f.date||"")+'</td>' +
+      '<td>'+esc(f.batchNo||"")+'</td>' +
+      '<td>'+esc(f.crustLotNo||"")+'</td>' +
+      '<td>'+esc(f.articleName||"")+'</td>' +
+      '<td>'+esc(f.colorName||"")+'</td>' +
+      '<td class="right">'+f.pcs+'</td>' +
+      '<td class="right">'+(isFinite(f.totalCost)?Number(f.totalCost).toFixed(2):"")+'</td>' +
+      '<td class="right"><button onclick="alert(\'Edit is available in the full build. If you need edit here, tell me and I will enable it.\')">Edit</button></td>' +
+    '</tr>';
+  }
+  tb.innerHTML=html;
+}
+
+/* ================= Finished Inventory ================= */
+function renderFinished(){
+  var db=ensureDB();
+  var fb=byId("finishedBody");
+  if(!db.finished.length) fb.innerHTML='<tr><td colspan="13" class="small">No finished lots yet.</td></tr>';
+  else{
+    var html="";
+    for(var i=0;i<db.finished.length;i++){
+      var f=db.finished[i];
+      var drumCps = (isFinite(f.drumCostPerSqft)?f.drumCostPerSqft:null);
+      var finCps = (isFinite(f.finCostPerSqft)?f.finCostPerSqft:null);
+      var totalCps = (isFinite(f.costPerSqft)?f.costPerSqft:null);
+      html+='<tr>' +
+        '<td>'+esc(f.date||"")+'</td>' +
+        '<td>'+esc(f.finishedLotNo)+'</td>' +
+        '<td>'+esc(f.crustLotNo)+'</td>' +
+        '<td>'+esc(f.articleName)+'</td>' +
+        '<td>'+esc(f.colorName)+'</td>' +
+        '<td class="right">'+f.pcs+'</td>' +
+        '<td class="right">'+(isFinite(f.sqft)?Number(f.sqft).toFixed(2):"—")+'</td>' +
+        '<td class="right">'+(isFinite(drumCps)?Number(drumCps).toFixed(4):"—")+'</td>' +
+        '<td class="right">'+(isFinite(finCps)?Number(finCps).toFixed(4):"—")+'</td>' +
+        '<td class="right">'+(isFinite(f.totalCost)?Number(f.totalCost).toFixed(2):"")+'</td>' +
+        '<td class="right">'+(isFinite(totalCps)?Number(totalCps).toFixed(4):"—")+'</td>' +
+        '<td class="right"><button onclick="updateFinishedSqft('+i+')">Update</button></td>' +
+        '<td class="right"><button onclick="openJobsForFinished(\''+f.id+'\')">Jobs</button></td>' +
+        '<td class="right"><button class="danger" onclick="deleteFinished('+i+')">Delete</button></td>' +
+      '</tr>';
+    }
+    fb.innerHTML=html;
+  }
+}
+window.updateFinishedSqft = function(i){
+  var db=ensureDB();
+  var f=db.finished[i]; if(!f) return;
+
+  var v=prompt("Enter Finished sqft for "+f.finishedLotNo, isFinite(f.sqft)?String(f.sqft):"");
+  if(v===null) return;
+
+  var sqft=num(v);
+  if(!isFinite(sqft)||sqft<=0){ alert("Invalid sqft"); return; }
+
+  f.sqft=sqft;
+
+  f.costPerSqft = (isFinite(f.totalCost)&&f.totalCost>=0) ? (f.totalCost/sqft) : null;
+  f.drumCostPerSqft = (isFinite(f.drumAllocCost)&&f.drumAllocCost>=0) ? (f.drumAllocCost/sqft) : null;
+  f.finCostPerSqft  = (isFinite(f.finChemCost)&&f.finChemCost>=0) ? (f.finChemCost/sqft) : null;
+
+  setDB(db);
+  renderFinished();
+};
+window.deleteFinished = function(i){
+  if(!confirm("Delete this finished lot? (will not auto-return PCS)")) return;
+  var db=ensureDB();
+  db.finished.splice(i,1);
+  setDB(db);
+  renderFinished();
+};
+
+/* ================= Lot Compilation ================= */
+function renderLotSelectors(){
+  var db=ensureDB();
+  var el=byId("lotSel");
+  var html="";
+  for(var i=0;i<db.wetblue.length;i++){
+    var w=db.wetblue[i];
+    html+='<option value="'+esc(w.id)+'">'+esc(w.lotNo)+'</option>';
+  }
+  if(!db.wetblue.length) html='<option value="">(No wet blue lots)</option>';
+  el.innerHTML=html;
+}
+function renderLotCompilation(){
+  var db=ensureDB();
+  var wbId=byId("lotSel").value;
+  if(!wbId){ byId("lotReport").innerHTML="Select a lot."; return; }
+  var wb=getById(db.wetblue, wbId);
+  if(!wb){ byId("lotReport").innerHTML="Lot not found."; return; }
+
+  var drumsPcs=0, drumCost=0;
+  for(var i=0;i<db.drums.length;i++){
+    if(db.drums[i].wbId===wbId){
+      drumsPcs += db.drums[i].pcs;
+      drumCost += (isFinite(db.drums[i].totalCost)?db.drums[i].totalCost:0);
+    }
+  }
+
+  var crustTotal=0, crustRemain=0;
+  for(var j=0;j<db.crust.length;j++){
+    if(db.crust[j].wbId===wbId){
+      crustTotal += db.crust[j].totalPcs;
+      crustRemain += db.crust[j].remainPcs;
+    }
+  }
+
+  var finishedPcs=0, finishedSqft=0, sqftKnownPcs=0, sqftPendingCount=0, finishingCost=0, totalCost=0;
+  var grp={};
+  for(var k=0;k<db.finished.length;k++){
+    var f=db.finished[k];
+    if(f.wbId!==wbId) continue;
+    finishedPcs += f.pcs;
+    finishingCost += (isFinite(f.finChemCost)?f.finChemCost:0);
+    totalCost += (isFinite(f.totalCost)?f.totalCost:0);
+
+    var key = String(f.articleName||"") + "||" + String(f.colorName||"");
+    if(!grp[key]) grp[key]={article:f.articleName||"", color:f.colorName||"", pcs:0, sqft:0, sqftKnownPcs:0};
+    grp[key].pcs += f.pcs;
+
+    if(isFinite(f.sqft)){
+      grp[key].sqft += f.sqft;
+      finishedSqft += f.sqft;
+      sqftKnownPcs += f.pcs;
+      grp[key].sqftKnownPcs += f.pcs;
+    } else {
+      sqftPendingCount += 1;
+    }
+  }
+
+  var avgSqftPerPc = (finishedSqft>0 && sqftKnownPcs>0) ? (finishedSqft/sqftKnownPcs) : NaN;
+  var costPerFinishedSqft = (finishedSqft>0 && totalCost>0) ? (totalCost/finishedSqft) : NaN;
+
+  var keys=[];
+  for(var kk in grp) if(grp.hasOwnProperty(kk)) keys.push(kk);
+  keys.sort(function(a,b){
+    var aa=(grp[a].article+" "+grp[a].color).toLowerCase();
+    var bb=(grp[b].article+" "+grp[b].color).toLowerCase();
+    return aa>bb?1:-1;
+  });
+
+  var html="";
+  html+='<div class="sectionTitle">PCS Flow</div>';
+  html+='<div class="card" style="margin:0 0 12px 0;">' +
+        '<b>Wet Blue Lot:</b> '+esc(wb.lotNo)+'<br>' +
+        '<span class="small">'+esc(wb.supplier||"")+'</span><br><br>' +
+        '<b>Total PCS:</b> '+wb.totalPcs+'<br>' +
+        '<b>Remaining Wet Blue PCS:</b> '+wb.remainPcs+'<br>' +
+        '<b>PCS Drummed:</b> '+drumsPcs+'<br>' +
+        '<b>Total Crust PCS created:</b> '+crustTotal+'<br>' +
+        '<b>Remaining Crust PCS:</b> '+crustRemain+'<br>' +
+        '<b>Finished PCS:</b> '+finishedPcs+'<br>' +
+        '</div>';
+
+  html+='<div class="sectionTitle">Finished Sqft + Performance</div>';
+  html+='<div class="card" style="margin:0 0 12px 0;">' +
+        '<b>Total Finished Sqft:</b> '+(isFinite(finishedSqft)?finishedSqft.toFixed(2):"0.00")+'<br>' +
+        '<b>Avg Sqft/PC (only where sqft entered):</b> '+(isFinite(avgSqftPerPc)?avgSqftPerPc.toFixed(4):"—")+'<br>' +
+        '<b>Sqft pending batches:</b> '+sqftPendingCount+'<br>' +
+        '</div>';
+
+  html+='<div class="sectionTitle">Article + Color Summary</div>';
+  html+='<div style="overflow:auto;"><table><thead><tr>' +
+        '<th>Article</th><th>Color</th><th class="right">Finished PCS</th><th class="right">Finished Sqft</th><th class="right">Avg Sqft/PC</th>' +
+        '</tr></thead><tbody>';
+
+  if(!keys.length){
+    html+='<tr><td colspan="5" class="small">No finished lots yet for this wet blue lot.</td></tr>';
+  } else {
+    for(var i2=0;i2<keys.length;i2++){
+      var g=grp[keys[i2]];
+      var a = (g.sqft>0 && g.sqftKnownPcs>0) ? (g.sqft/g.sqftKnownPcs) : NaN;
+      html+='<tr><td>'+esc(g.article)+'</td><td>'+esc(g.color)+'</td>' +
+        '<td class="right">'+g.pcs+'</td><td class="right">'+(isFinite(g.sqft)?g.sqft.toFixed(2):"0.00")+'</td>' +
+        '<td class="right">'+(isFinite(a)?a.toFixed(4):"—")+'</td></tr>';
+    }
+  }
+  html+='</tbody></table></div>';
+
+  html+='<div class="sectionTitle">Cost Summary</div>';
+  html+='<div class="card" style="margin-top:10px;">' +
+        '<b>Total Drum Chemical Cost (all drums from this lot):</b> '+(isFinite(drumCost)?drumCost.toFixed(2):"0.00")+'<br>' +
+        '<b>Total Finishing Chemical Cost (finished lots):</b> '+(isFinite(finishingCost)?finishingCost.toFixed(2):"0.00")+'<br>' +
+        '<b>Total Finished Cost (Allocated + Finishing):</b> '+(isFinite(totalCost)?totalCost.toFixed(2):"0.00")+'<br>' +
+        '<b>Cost per Finished Sqft:</b> '+(isFinite(costPerFinishedSqft)?costPerFinishedSqft.toFixed(4):"—")+'<br>' +
+        '</div>';
+
+  byId("lotReport").innerHTML=html;
+}
+
+
+/* ================= Costing Dashboard ================= */
+function fillCostingWetblueSelect(){
+  var db=ensureDB();
+  var el=byId("costWbSel"); if(!el) return;
+  var cur = el.value || "";
+  var html = '<option value="">(All Wet Blue lots)</option>';
+  for(var i=0;i<db.wetblue.length;i++){
+    var w=db.wetblue[i];
+    html += '<option value="'+esc(w.id)+'" '+(w.id===cur?'selected':'')+'>'+esc(w.lotNo)+'</option>';
+  }
+  el.innerHTML = html;
+}
+function clearCostingFilter(){
+  var el=byId("costWbSel"); if(el) el.value="";
+  renderCosting();
+}
+function renderCosting(){
+  var db=ensureDB();
+
+  // Finished-lot costing (Wet Blue + recoveries)
+  fillFinishedSelect("costFinSel", byId("costFinSel") ? byId("costFinSel").value : "");
+  renderFinishedCosting();
+
+  fillCostingWetblueSelect();
+  var wbFilter = byId("costWbSel") ? byId("costWbSel").value : "";
+
+  // totals
+  var totDrum=0, totFinChem=0, totJobs=0, totAll=0;
+  // inventory values
+  var crustValue=0, finishedValue=0;
+
+  for(var i=0;i<db.drums.length;i++){
+    var d=db.drums[i];
+    if(wbFilter && d.wbId!==wbFilter) continue;
+    totDrum += (isFinite(d.totalCost)?d.totalCost:0);
+  }
+  for(var j=0;j<db.finishing.length;j++){
+    var f=db.finishing[j];
+    if(wbFilter && f.wbId!==wbFilter) continue;
+    totFinChem += (isFinite(f.finChemCost)?f.finChemCost:0);
+  }
+  for(var k=0;k<db.finished.length;k++){
+    var fl=db.finished[k];
+    if(wbFilter && fl.wbId!==wbFilter) continue;
+    totJobs += (isFinite(fl.jobCost)?fl.jobCost:0);
+    totAll  += (isFinite(fl.totalCost)?fl.totalCost:0);
+    finishedValue += (isFinite(fl.totalCost)?fl.totalCost:0);
+  }
+  for(var c=0;c<db.crust.length;c++){
+    var cr=db.crust[c];
+    if(wbFilter && cr.wbId!==wbFilter) continue;
+    if(isFinite(cr.costPerSide) && isFinite(cr.remainSides)) crustValue += (cr.costPerSide*cr.remainSides);
+  }
+
+  byId("costTotDrum").innerHTML = isFinite(totDrum) ? totDrum.toFixed(2) : "—";
+  byId("costTotFinChem").innerHTML = isFinite(totFinChem) ? totFinChem.toFixed(2) : "—";
+  byId("costTotJobs").innerHTML = isFinite(totJobs) ? totJobs.toFixed(2) : "—";
+  byId("costTotAll").innerHTML = isFinite(totAll) ? totAll.toFixed(2) : "—";
+
+  var hint = wbFilter ? ("Filtered to 1 Wet Blue lot") : ("All lots");
+  byId("costTotHint").innerHTML = hint;
+
+  byId("costCrustValue").innerHTML = isFinite(crustValue) ? crustValue.toFixed(2) : "—";
+  byId("costFinishedValue").innerHTML = isFinite(finishedValue) ? finishedValue.toFixed(2) : "—";
+
+  // Wet blue table
+  var body=byId("costWbBody");
+  if(!db.wetblue.length){
+    body.innerHTML='<tr><td colspan="8" class="small">No wet blue lots yet.</td></tr>';
+  }else{
+    var rows=[];
+    for(var w=0; w<db.wetblue.length; w++){
+      var wb=db.wetblue[w];
+      if(wbFilter && wb.id!==wbFilter) continue;
+
+      var drumSides=0;
+      for(var i2=0;i2<db.drums.length;i2++) if(db.drums[i2].wbId===wb.id) drumSides += (db.drums[i2].sides||0);
+
+      var finSides=0, finSqft=0, finCost=0;
+      for(var i3=0;i3<db.finished.length;i3++){
+        var fl=db.finished[i3];
+        if(fl.wbId!==wb.id) continue;
+        finSides += (fl.sides||0);
+        finCost  += (isFinite(fl.totalCost)?fl.totalCost:0);
+        if(isFinite(fl.sqft)) finSqft += fl.sqft;
+      }
+      var cps = (finSqft>0) ? (finCost/finSqft) : NaN;
+
+      rows.push(
+        '<tr>' +
+        '<td>'+esc(wb.lotNo)+'</td>' +
+        '<td class="right">'+fix(wb.totalHide,1)+'</td>' +
+        '<td class="right">'+fix(wb.remainHide,1)+'</td>' +
+        '<td class="right">'+fix(drumSides,0)+'</td>' +
+        '<td class="right">'+fix(finSides,0)+'</td>' +
+        '<td class="right">'+(isFinite(finSqft)?finSqft.toFixed(2):"0.00")+'</td>' +
+        '<td class="right">'+(isFinite(finCost)?finCost.toFixed(2):"0.00")+'</td>' +
+        '<td class="right">'+(isFinite(cps)?cps.toFixed(4):"—")+'</td>' +
+        '</tr>'
+      );
+    }
+    body.innerHTML = rows.length ? rows.join("") : '<tr><td colspan="8" class="small">No lots match this filter.</td></tr>';
+  }
+
+  // Article + color summary
+  var grp={};
+  for(var z=0; z<db.finished.length; z++){
+    var fl2=db.finished[z];
+    if(wbFilter && fl2.wbId!==wbFilter) continue;
+    var key = String(fl2.articleName||"") + "||" + String(fl2.colorName||"");
+    if(!grp[key]) grp[key]={article:fl2.articleName||"", color:fl2.colorName||"", sides:0, sqft:0, cost:0};
+    grp[key].sides += (fl2.sides||0);
+    if(isFinite(fl2.sqft)) grp[key].sqft += fl2.sqft;
+    grp[key].cost += (isFinite(fl2.totalCost)?fl2.totalCost:0);
+  }
+  var keys=[];
+  for(var kk in grp) if(grp.hasOwnProperty(kk)) keys.push(kk);
+  keys.sort(function(a,b){
+    var aa=(grp[a].article+" "+grp[a].color).toLowerCase();
+    var bb=(grp[b].article+" "+grp[b].color).toLowerCase();
+    return aa>bb?1:-1;
+  });
+  var ab=byId("costArtBody");
+  if(!keys.length){
+    ab.innerHTML='<tr><td colspan="6" class="small">No finished lots yet.</td></tr>';
+  }else{
+    var h="";
+    for(var q=0;q<keys.length;q++){
+      var g=grp[keys[q]];
+      var cps2 = (g.sqft>0) ? (g.cost/g.sqft) : NaN;
+      h+='<tr>' +
+         '<td>'+esc(g.article)+'</td>' +
+         '<td>'+esc(g.color)+'</td>' +
+         '<td class="right">'+fix(g.sides,0)+'</td>' +
+         '<td class="right">'+(isFinite(g.sqft)?g.sqft.toFixed(2):"0.00")+'</td>' +
+         '<td class="right">'+(isFinite(g.cost)?g.cost.toFixed(2):"0.00")+'</td>' +
+         '<td class="right">'+(isFinite(cps2)?cps2.toFixed(4):"—")+'</td>' +
+         '</tr>';
+    }
+    ab.innerHTML=h;
+  }
+}
+
+
+/* ================= Costing: Finished Lot (Wet Blue Rate - Recoveries) ================= */
+function clearFinishedCostingInputs(){
+  if(byId("cWbRate")) byId("cWbRate").value="";
+  if(byId("cSplitRec")) byId("cSplitRec").value="";
+  if(byId("cGalmaRec")) byId("cGalmaRec").value="";
+  recalcFinishedCosting();
+}
+function getFinishedById(db, id){
+  for(var i=0;i<db.finished.length;i++) if(db.finished[i].id===id) return db.finished[i];
+  return null;
+}
+function renderFinishedCosting(){
+  var db=ensureDB();
+  // keep dropdown populated
+  fillFinishedSelect("costFinSel", byId("costFinSel") ? byId("costFinSel").value : "");
+
+  var finId = byId("costFinSel") ? byId("costFinSel").value : "";
+  var f = getFinishedById(db, finId);
+  if(!f){
+    if(byId("cNetRateOut")) byId("cNetRateOut").innerHTML="—";
+    if(byId("cWbCostOut")) byId("cWbCostOut").innerHTML="—";
+    if(byId("cTotalInclOut")) byId("cTotalInclOut").innerHTML="—";
+    if(byId("cPerSqftOut")) byId("cPerSqftOut").innerHTML="—";
+    if(byId("cHint")) byId("cHint").innerHTML="No finished lots yet. Create a finishing batch first.";
+    return;
+  }
+
+  // load saved values if present (do not overwrite user typing if fields already have something)
+  if(byId("cWbRate") && (byId("cWbRate").value==="" || byId("cWbRate").value===null)) byId("cWbRate").value = (isFinite(f.wbRate)?String(f.wbRate):"");
+  if(byId("cSplitRec") && (byId("cSplitRec").value==="" || byId("cSplitRec").value===null)) byId("cSplitRec").value = (isFinite(f.splitRecovery)?String(f.splitRecovery):"");
+  if(byId("cGalmaRec") && (byId("cGalmaRec").value==="" || byId("cGalmaRec").value===null)) byId("cGalmaRec").value = (isFinite(f.galmaRecovery)?String(f.galmaRecovery):"");
+
+  recalcFinishedCosting();
+}
+function recalcFinishedCosting(){
+  var db=ensureDB();
+  var finId = byId("costFinSel") ? byId("costFinSel").value : "";
+  var f = getFinishedById(db, finId);
+  if(!f){
+    if(byId("cHint")) byId("cHint").innerHTML="Select a finished lot.";
+    return;
+  }
+
+  var wbRate = num(byId("cWbRate") ? byId("cWbRate").value : "");
+  var splitRec = num(byId("cSplitRec") ? byId("cSplitRec").value : "");
+  var galmaRec = num(byId("cGalmaRec") ? byId("cGalmaRec").value : "");
+
+  if(!isFinite(wbRate)) wbRate = NaN;
+  if(!isFinite(splitRec)) splitRec = 0;
+  if(!isFinite(galmaRec)) galmaRec = 0;
+
+  var netRate = NaN;
+  if(isFinite(wbRate)) netRate = wbRate - splitRec - galmaRec;
+
+  var hidesUsed = (isFinite(f.sides)?(f.sides / SIDES_PER_HIDE):NaN);
+  var wbCost = NaN;
+  if(isFinite(netRate) && isFinite(hidesUsed)) wbCost = netRate * hidesUsed;
+
+  var baseTotal = isFinite(f.totalCost) ? f.totalCost : 0;
+  var totalIncl = isFinite(wbCost) ? (baseTotal + wbCost) : NaN;
+
+  var perSqft = NaN;
+  if(isFinite(totalIncl) && isFinite(f.sqft) && f.sqft>0) perSqft = totalIncl / f.sqft;
+
+  if(byId("cNetRateOut")) byId("cNetRateOut").innerHTML = isFinite(netRate) ? netRate.toFixed(2) : "—";
+  if(byId("cWbCostOut")) byId("cWbCostOut").innerHTML = isFinite(wbCost) ? wbCost.toFixed(2) : "—";
+  if(byId("cTotalInclOut")) byId("cTotalInclOut").innerHTML = isFinite(totalIncl) ? totalIncl.toFixed(2) : "—";
+  if(byId("cPerSqftOut")) byId("cPerSqftOut").innerHTML = isFinite(perSqft) ? perSqft.toFixed(4) : "—";
+
+  if(!isFinite(wbRate)) byId("cHint").innerHTML="Enter Wet Blue Rate (per hide).";
+  else if(!isFinite(netRate)) byId("cHint").innerHTML="Check rate values.";
+  else if(!(isFinite(f.sqft) && f.sqft>0)) byId("cHint").innerHTML="Sqft not entered yet. Go to Finished Inventory → Update sqft.";
+  else byId("cHint").innerHTML="OK ✅";
+}
+function saveFinishedCosting(){
+  var db=ensureDB();
+  var finId = byId("costFinSel") ? byId("costFinSel").value : "";
+  var f = getFinishedById(db, finId);
+  if(!f){ alert("Select a finished lot"); return; }
+
+  var wbRate = num(byId("cWbRate").value);
+  var splitRec = num(byId("cSplitRec").value);
+  var galmaRec = num(byId("cGalmaRec").value);
+
+  if(!isFinite(wbRate)){ alert("Enter Wet Blue Rate"); return; }
+  if(!isFinite(splitRec)) splitRec = 0;
+  if(!isFinite(galmaRec)) galmaRec = 0;
+
+  f.wbRate = wbRate;
+  f.splitRecovery = splitRec;
+  f.galmaRecovery = galmaRec;
+
+  // store calculated fields too (optional, for export)
+  var netRate = wbRate - splitRec - galmaRec;
+  var hidesUsed = (f.sides / SIDES_PER_HIDE);
+  f.netWbRate = netRate;
+  f.wbCost = netRate * hidesUsed;
+
+  f.totalCostInclWb = (isFinite(f.totalCost)?f.totalCost:0) + (isFinite(f.wbCost)?f.wbCost:0);
+  f.costPerSqftInclWb = (isFinite(f.sqft) && f.sqft>0) ? (f.totalCostInclWb / f.sqft) : null;
+
+  setDB(db);
+  alert("Costing saved ✅");
+  recalcFinishedCosting();
+}
+
+/* ================= Printable Costing Sheet (Save as PDF via Print) ================= */
+function _fmt2(n){ return isFinite(n)?Number(n).toFixed(2):"—"; }
+function _fmt4(n){ return isFinite(n)?Number(n).toFixed(4):"—"; }
+function printFinishedCostingSheet(){
+  var db=ensureDB();
+  var finId = byId("costFinSel") ? byId("costFinSel").value : "";
+  var f = getFinishedById(db, finId);
+  if(!f){ alert("Select a finished lot"); return; }
+
+  // use latest inputs if present (even if not saved)
+  var wbRate = num(byId("cWbRate") ? byId("cWbRate").value : f.wbRate);
+  var splitRec = num(byId("cSplitRec") ? byId("cSplitRec").value : f.splitRecovery);
+  var galmaRec = num(byId("cGalmaRec") ? byId("cGalmaRec").value : f.galmaRecovery);
+  if(!isFinite(wbRate)) wbRate = isFinite(f.wbRate)?f.wbRate:0;
+  if(!isFinite(splitRec)) splitRec = 0;
+  if(!isFinite(galmaRec)) galmaRec = 0;
+
+  var netRate = wbRate - splitRec - galmaRec;
+  var hidesUsed = (f.sides||0) / SIDES_PER_HIDE;
+  var wbCost = netRate * hidesUsed;
+
+  var drumAlloc = isFinite(f.drumAllocCost)?f.drumAllocCost:0;
+  var finChem = isFinite(f.finChemCost)?f.finChemCost:0;
+  var jobCost = isFinite(f.jobCost)?f.jobCost:0;
+  var totalNoWb = isFinite(f.totalCost)?f.totalCost:(drumAlloc+finChem+jobCost);
+  var totalIncl = totalNoWb + (isFinite(wbCost)?wbCost:0);
+  var perSqftIncl = (isFinite(f.sqft) && f.sqft>0) ? (totalIncl / f.sqft) : NaN;
+
+  var today = new Date();
+  var dd=String(today.getDate()); if(dd.length<2) dd="0"+dd;
+  var mm=String(today.getMonth()+1); if(mm.length<2) mm="0"+mm;
+  var yyyy=today.getFullYear();
+  var genDate = dd+"-"+mm+"-"+yyyy;
+
+  var title = "ALIF Leather • Costing Sheet • "+(f.finishedLotNo||"");
+  var html = ''+
+  '<!DOCTYPE html><html><head><meta charset="utf-8">'+
+  '<meta name="viewport" content="width=device-width, initial-scale=1">'+
+  '<title>'+esc(title)+'</title>'+
+  '<style>'+
+  'body{font-family:-apple-system,Helvetica,Arial,sans-serif;color:#111;margin:18px;}'+
+  '.hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px;}'+
+  '.brand{font-weight:800;font-size:16px;}'+
+  '.muted{color:#555;font-size:12px;line-height:1.35}'+
+  '.box{border:1px solid #ddd;border-radius:12px;padding:12px;margin:10px 0;}'+
+  'table{width:100%;border-collapse:collapse;font-size:12px;}'+
+  'th,td{border-bottom:1px solid #eee;padding:8px 6px;text-align:left;vertical-align:top;}'+
+  'th{background:#fafafa;color:#444;font-weight:700;}'+
+  '.right{text-align:right;}'+
+  '.big{font-size:18px;font-weight:800;}'+
+  '.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}'+
+  '@media print{body{margin:10mm;} .noPrint{display:none;}}'+
+  '</style></head><body>'+
+  '<div class="hdr">'+
+    '<div><div class="brand">ALIF Leather • Finished Lot Costing Sheet</div>'+
+    '<div class="muted">Generated: '+esc(genDate)+'</div></div>'+
+    '<div class="muted" style="text-align:right">Lot: <b>'+esc(f.finishedLotNo||"")+'</b><br>Article: <b>'+esc(f.articleName||"")+'</b><br>Color: <b>'+esc(f.colorName||"")+'</b></div>'+
+  '</div>'+
+
+  '<div class="grid">'+
+    '<div class="box">'+
+      '<div class="muted">Production Details</div>'+
+      '<table><tbody>'+
+        '<tr><td>Wet Blue Lot</td><td class="right"><b>'+esc(f.wbLotNo||"")+'</b></td></tr>'+
+        '<tr><td>Crust Lot</td><td class="right"><b>'+esc(f.crustLotNo||"")+'</b></td></tr>'+
+        '<tr><td>SIDES</td><td class="right"><b>'+esc(f.sides||0)+'</b></td></tr>'+
+        '<tr><td>HIDE used</td><td class="right"><b>'+_fmt2(hidesUsed)+'</b></td></tr>'+
+        '<tr><td>Sqft</td><td class="right"><b>'+ (isFinite(f.sqft)?Number(f.sqft).toFixed(2):"—") +'</b></td></tr>'+
+      '</tbody></table>'+
+    '</div>'+
+
+    '<div class="box">'+
+      '<div class="muted">Wet Blue Rate & Recovery</div>'+
+      '<table><tbody>'+
+        '<tr><td>Wet Blue Rate</td><td class="right">'+_fmt2(wbRate)+'</td></tr>'+
+        '<tr><td>Split Recovery</td><td class="right">'+_fmt2(splitRec)+'</td></tr>'+
+        '<tr><td>Galma Recovery</td><td class="right">'+_fmt2(galmaRec)+'</td></tr>'+
+        '<tr><td><b>Net Wet Blue Rate</b></td><td class="right"><b>'+_fmt2(netRate)+'</b></td></tr>'+
+        '<tr><td><b>Wet Blue Cost</b></td><td class="right"><b>'+_fmt2(wbCost)+'</b></td></tr>'+
+      '</tbody></table>'+
+      '<div class="muted">Net Rate = Wet Blue Rate − Split − Galma</div>'+
+    '</div>'+
+  '</div>'+
+
+  '<div class="box">'+
+    '<div class="muted">Cost Breakdown (Selected Finished Lot)</div>'+
+    '<table><thead><tr><th>Component</th><th class="right">Amount</th></tr></thead><tbody>'+
+      '<tr><td>Drum Allocated Cost</td><td class="right">'+_fmt2(drumAlloc)+'</td></tr>'+
+      '<tr><td>Finishing Chemical Cost</td><td class="right">'+_fmt2(finChem)+'</td></tr>'+
+      '<tr><td>Job Cost</td><td class="right">'+_fmt2(jobCost)+'</td></tr>'+
+      '<tr><td><b>Total (without Wet Blue)</b></td><td class="right"><b>'+_fmt2(totalNoWb)+'</b></td></tr>'+
+      '<tr><td><b>Wet Blue Cost</b></td><td class="right"><b>'+_fmt2(wbCost)+'</b></td></tr>'+
+      '<tr><td class="big">TOTAL (Incl. Wet Blue)</td><td class="right big">'+_fmt2(totalIncl)+'</td></tr>'+
+    '</tbody></table>'+
+    '<div style="margin-top:10px;display:flex;justify-content:space-between;gap:12px;align-items:flex-end;">'+
+      '<div class="muted">Total Cost / Sqft (Incl. WB)</div>'+
+      '<div class="big">'+_fmt4(perSqftIncl)+'</div>'+
+    '</div>'+
+    '<div class="muted" style="margin-top:6px;">If sqft is not entered, Total Cost/Sqft will show as —.</div>'+
+  '</div>'+
+
+  '<div class="noPrint muted">Tip: Use your browser share/print → "Save as PDF".</div>'+
+  '</body></html>';
+
+  var w = window.open('', '_blank');
+  if(!w){ alert('Popup blocked. Allow popups for this page.'); return; }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  // Auto-open print dialog (user can Save as PDF)
+  setTimeout(function(){ try{ w.focus(); w.print(); }catch(e){} }, 400);
+}
+
+/* ================= Export CSV ================= */
+function csvCell(v){
+  v=(v===null||v===undefined)?"":String(v);
+  if(/[",\\n]/.test(v)) v='"'+v.replace(/"/g,'""')+'"';
+  return v;
+}
+function downloadFile(filename, content, mime){
+  mime=mime||"text/csv;charset=utf-8;";
+  try{
+    var blob=new Blob([content],{type:mime});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url; a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 250);
+  }catch(e){
+    var w=window.open();
+    if(w){
+      w.document.write("<pre>"+content.replace(/</g,"&lt;")+"</pre>");
+      w.document.close();
+      alert("Old iOS: Copy CSV text and paste into Excel/Numbers.");
+    }else{
+      alert("Popup blocked. Allow popups for this page.");
+    }
+  }
+}
+function exportCSV(){
+  var db=ensureDB();
+  var out=[];
+
+  out.push("WETBLUE LOTS");
+  out.push(["LotNo","Supplier","TotalPCS","RemainingPCS","Date"].map(csvCell).join(","));
+  for(var i=0;i<db.wetblue.length;i++){
+    var w=db.wetblue[i];
+    out.push([w.lotNo,w.supplier,w.totalPcs,w.remainPcs,w.date].map(csvCell).join(","));
+  }
+  out.push("");
+
+  out.push("DRUMS");
+  out.push(["Date","DrumNo","WetBlueLot","PCS","BaseKg","Article","Color","TotalCost","CostPerPc"].map(csvCell).join(","));
+  for(var j=0;j<db.drums.length;j++){
+    var d=db.drums[j];
+    out.push([d.date,d.drumNo,d.wbLotNo,d.pcs,d.baseKg,d.articleName,d.colorName,
+      isFinite(d.totalCost)?d.totalCost.toFixed(2):"", isFinite(d.costPerPc)?d.costPerPc.toFixed(2):""
+    ].map(csvCell).join(","));
+  }
+  out.push("");
+
+  out.push("CRUST LOTS");
+  out.push(["CrustLot","CreatedDate","WetBlueLot","DrumNo","Article","Color","TotalPCS","RemainingPCS","CostPerPc","TotalDrumCost"].map(csvCell).join(","));
+  for(var c=0;c<db.crust.length;c++){
+    var cr=db.crust[c];
+    out.push([cr.crustLotNo,cr.createdDate,cr.wbLotNo,cr.drumNo,cr.articleName,cr.colorName,
+      cr.totalPcs,cr.remainPcs,
+      isFinite(cr.costPerPc)?Number(cr.costPerPc).toFixed(2):"",
+      isFinite(cr.totalDrumCost)?Number(cr.totalDrumCost).toFixed(2):""
+    ].map(csvCell).join(","));
+  }
+  out.push("");
+
+  out.push("FINISHED LOTS");
+  out.push(["Date","FinishedLot","WetBlueLot","CrustLot","Article","Color","PCS","Sqft","DrumCostPerSqft","FinCostPerSqft","TotalCost","TotalCostPerSqft"].map(csvCell).join(","));
+  for(var f3=0;f3<db.finished.length;f3++){
+    var ff=db.finished[f3];
+    out.push([ff.date,ff.finishedLotNo,ff.wbLotNo,ff.crustLotNo,ff.articleName,ff.colorName,ff.pcs,
+      isFinite(ff.sqft)?Number(ff.sqft).toFixed(2):"",
+      isFinite(ff.drumCostPerSqft)?Number(ff.drumCostPerSqft).toFixed(4):"",
+      isFinite(ff.finCostPerSqft)?Number(ff.finCostPerSqft).toFixed(4):"",
+      isFinite(ff.totalCost)?Number(ff.totalCost).toFixed(2):"",
+      isFinite(ff.costPerSqft)?Number(ff.costPerSqft).toFixed(4):""
+    ].map(csvCell).join(","));
+  }
+
+  var d0=new Date();
+  var dd=String(d0.getDate()); if(dd.length<2) dd="0"+dd;
+  var mm=String(d0.getMonth()+1); if(mm.length<2) mm="0"+mm;
+  var yyyy=d0.getFullYear();
+  downloadFile("ALIF_Tannery_AllData_"+dd+"-"+mm+"-"+yyyy+".csv", out.join("\\n"), "text/csv;charset=utf-8;");
+}
+function wipeAll(){
+  if(!confirm("Delete ALL data?")) return;
+  storageRemove("alif_tannery_db");
+  ensureDB();
+  alert("All deleted.");
+  showTab("masters");
+}
+
+
+/* ================= Apply Latest Master Rates (Edit Mode) ================= */
+function applyLatestMasterRatesToDrum(){
+  var db=ensureDB();
+  if(!db.drumEditId){ alert("This is available only in Edit mode."); return; }
+  if(!db.drumDraft) db.drumDraft={doses:[]};
+  db.drumDraft.forceLatestRates = true;
+  setDB(db);
+  buildDrumDoseUI();
+  alert("Latest master rates applied to this drum draft. Save Update to commit.");
+}
+function applyLatestMasterRatesToFinishing(){
+  var db=ensureDB();
+  if(!db.finEditId){ alert("This is available only in Edit mode."); return; }
+  if(!db.finDraft) db.finDraft={doses:[]};
+  db.finDraft.forceLatestRates = true;
+  setDB(db);
+  buildFinDoseUI();
+  alert("Latest master rates applied to this finishing draft. Save Update to commit.");
+}
+/* ================= INIT ================= */
+function init(){
+  ensureDB();
+  fillStageSelect("dChemStage","Retan");
+  renderMasters();
+  updateStorageBanner();
+}
+init();
+</script>
+</body>
+</html>
