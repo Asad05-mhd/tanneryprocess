@@ -1472,8 +1472,11 @@ function renderDrumWbMix(){
     return out;
   }
 
+  var dirty=false;
   for(var i=0;i<db.drumWbDraft.length;i++){
     var line=db.drumWbDraft[i];
+    // Backward-compat: older drafts may not have an id (Remove button needs it)
+    if(!line.id){ line.id = nowId("wbm"); dirty=true; }
     var pcs=parseInt(line.pcs,10);
     if(!(isFinite(pcs)&&pcs>0)) pcs=0;
     totalPcs += pcs;
@@ -1484,6 +1487,8 @@ function renderDrumWbMix(){
       '<td class="right"><button class="danger miniBtn" onclick="deleteDrumWbDraftLine(\''+line.id+'\')">Remove</button></td>' +
       '</tr>';
   }
+
+  if(dirty) setDB(db);
 
   // footer
   html += '<tr><td class="right"><b>Total</b></td><td class="right"><b>'+totalPcs+'</b></td><td></td></tr>';
@@ -1508,11 +1513,14 @@ function addWbToDrum(){
   var found=false;
   for(var i=0;i<db.drumWbDraft.length;i++){
     if(db.drumWbDraft[i].wbId===wbId){
+      // Backward-compat: if older drafts missed an id, assign one now
+      if(!db.drumWbDraft[i].id) db.drumWbDraft[i].id = nowId("wbm");
       db.drumWbDraft[i].pcs = String(parseInt(db.drumWbDraft[i].pcs,10) + pcs);
       found=true; break;
     }
   }
-  if(!found) db.drumWbDraft.push({wbId:wbId, pcs:String(pcs), lotNo:wb.lotNo});
+  // IMPORTANT: each mix line needs a stable id (used by Remove button + inputs)
+  if(!found) db.drumWbDraft.push({id:nowId("wbm"), wbId:wbId, pcs:String(pcs), lotNo:wb.lotNo});
   setDB(db);
   byId("drumLotAddPcs").value="";
   renderDrumWbMix();
@@ -1865,7 +1873,7 @@ function startEditDrum(drumId){
   var all = (drum.wbAllocs && drum.wbAllocs.length) ? drum.wbAllocs : [{wbId:drum.wbId, wbLotNo:drum.wbLotNo, pcs:drum.pcs}];
   db.drumWbDraft = [];
   for(var i=0;i<all.length;i++){
-    db.drumWbDraft.push({wbId:all[i].wbId, pcs:String(all[i].pcs), lotNo:all[i].wbLotNo});
+    db.drumWbDraft.push({id:nowId("wbm"), wbId:all[i].wbId, pcs:String(all[i].pcs), lotNo:all[i].wbLotNo});
   }
 
   setDB(db);
