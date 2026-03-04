@@ -922,6 +922,23 @@ function fillCrustSelect(selId, selectedId){
   el.innerHTML=html;
 }
 
+function fillFinishedSelect(selId, selectedId){
+  var db=ensureDB();
+  var el=byId(selId); if(!el) return;
+  var html="";
+  for(var i=0;i<db.finished.length;i++){
+    var f=db.finished[i];
+    html += '<option value="'+esc(f.id)+'" '+(f.id===selectedId?'selected':'')+'>'+
+            esc(f.finishedLotNo)+' • '+esc(f.articleName||"")+' • '+esc(f.colorName||"")+
+            ' • '+(isFinite(f.pcs)?f.pcs:"")+' pcs'+
+            (isFinite(f.sqft)?(' • '+Number(f.sqft).toFixed(2)+' sqft'):'')+
+            '</option>';
+  }
+  if(!db.finished.length) html = '<option value="">(No finished lots yet)</option>';
+  el.innerHTML=html;
+}
+
+
 /* ================= MASTERS: Color ================= */
 function addColor(){
   var name=(byId("mColor").value||"").trim();
