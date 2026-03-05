@@ -833,6 +833,9 @@ function ensureDB(){
   if(!db.jobsMaster) db.jobsMaster=[];           // {id,name,rate}
   if(!db.selJobs) db.selJobs=[];                 // [jobId]
   if(!db.jobsByFinishedId) db.jobsByFinishedId={}; // { finishedId: [ {id,jobId,name,rate,coats} ] }
+  // Costing sheet per finished lot
+  if(!db.costingByFinishedId) db.costingByFinishedId={};
+
   setDB(db);
   return db;
 }
@@ -936,6 +939,45 @@ function fillFinishedSelect(selId, selectedId){
   }
   if(!db.finished.length) html = '<option value="">(No finished lots yet)</option>';
   el.innerHTML=html;
+}
+
+/* ================= Costing helpers ================= */
+function fillCostingSelect(selectedId){
+  var db=ensureDB();
+  var el=byId('costFinSel');
+  if(!el) return;
+
+  // Prefer listing FINISHING batches (what users call "finish lot")
+  var html='';
+  if(db.finishing && db.finishing.length){
+    for(var i=0;i<db.finishing.length;i++){
+      var fin=db.finishing[i];
+      var label=(fin.batchNo||fin.id) + ' • Crust ' + (fin.crustLotNo||'') + ' • ' + (fin.articleName||'') + ' • ' + (fin.colorName||'') + ' • ' + (isFinite(fin.pcs)?fin.pcs:fin.sides) + ' pcs';
+      html += '<option value="'+esc(fin.id)+'" '+(fin.id===selectedId?'selected':'')+'>'+esc(label)+'</option>';
+    }
+  } else {
+    // Fallback: list finished lots
+    for(var j=0;j<db.finished.length;j++){
+      var f=db.finished[j];
+      var label2=(f.finishedLotNo||f.id)+' • '+(f.articleName||'')+' • '+(f.colorName||'')+' • '+(isFinite(f.pcs)?f.pcs:f.sides)+' pcs';
+      html += '<option value="'+esc(f.id)+'" '+(f.id===selectedId?'selected':'')+'>'+esc(label2)+'</option>';
+    }
+  }
+  if(!html) html='<option value="">(No finishing/finished lots yet)</option>';
+  el.innerHTML=html;
+}
+
+function getSelectedFinishedForCosting(db){
+  var sel = byId('costFinSel') ? byId('costFinSel').value : '';
+  if(!sel) return null;
+  // If selected value is a Finished Lot id
+  var f=getFinishedById(db, sel);
+  if(f) return f;
+  // If selected value is a Finishing Batch id, map to its Finished Lot
+  for(var i=0;i<db.finished.length;i++){
+    if(db.finished[i].finishingId===sel) return db.finished[i];
+  }
+  return null;
 }
 
 
@@ -2876,8 +2918,8 @@ function clearCostingFilter(){
 function renderCosting(){
   var db=ensureDB();
 
-  // Finished-lot costing (Wet Blue + recoveries)
-  fillFinishedSelect("costFinSel", byId("costFinSel") ? byId("costFinSel").value : "");
+  // Costing is entered against a "finish lot" (Finishing Batch). We map it to the linked Finished Lot.
+  fillCostingSelect(byId("costFinSel") ? byId("costFinSel").value : "");
   renderFinishedCosting();
 
   fillCostingWetblueSelect();
@@ -3014,11 +3056,10 @@ function getFinishedById(db, id){
 }
 function renderFinishedCosting(){
   var db=ensureDB();
-  // keep dropdown populated
-  fillFinishedSelect("costFinSel", byId("costFinSel") ? byId("costFinSel").value : "");
+  // keep dropdown populated (Finishing batches preferred)
+  fillCostingSelect(byId("costFinSel") ? byId("costFinSel").value : "");
 
-  var finId = byId("costFinSel") ? byId("costFinSel").value : "";
-  var f = getFinishedById(db, finId);
+  var f = getSelectedFinishedForCosting(db);
   if(!f){
     if(byId("cNetRateOut")) byId("cNetRateOut").innerHTML="—";
     if(byId("cWbCostOut")) byId("cWbCostOut").innerHTML="—";
@@ -3037,74 +3078,94 @@ function renderFinishedCosting(){
 }
 function recalcFinishedCosting(){
   var db=ensureDB();
-  var finId = byId("costFinSel") ? byId("costFinSel").value : "";
-  var f = getFinishedById(db, finId);
+  var f = getSelectedFinishedForCosting(db);
   if(!f){
     if(byId("cHint")) byId("cHint").innerHTML="Select a finished lot.";
+    if(byId("cWbCostOut")) byId("cWbCostOut").innerHTML="—";
+    if(byId("cTotalInclOut")) byId("cTotalInclOut").innerHTML="—";
+    if(byId("cPerSqftOut")) byId("cPerSqftOut").innerHTML="—";
     return;
   }
 
-  var wbRate = num(byId("cWbRate") ? byId("cWbRate").value : "");
-  var splitRec = num(byId("cSplitRec") ? byId("cSplitRec").value : "");
-  var galmaRec = num(byId("cGalmaRec") ? byId("cGalmaRec").value : "");
-
-  if(!isFinite(wbRate)) wbRate = NaN;
-  if(!isFinite(splitRec)) splitRec = 0;
-  if(!isFinite(galmaRec)) galmaRec = 0;
-
-  var netRate = NaN;
-  if(isFinite(wbRate)) netRate = wbRate - splitRec - galmaRec;
-
-  var hidesUsed = (isFinite(f.sides)?(f.sides / SIDES_PER_HIDE):NaN);
-  var wbCost = NaN;
-  if(isFinite(netRate) && isFinite(hidesUsed)) wbCost = netRate * hidesUsed;
-
-  var baseTotal = isFinite(f.totalCost) ? f.totalCost : 0;
-  var totalIncl = isFinite(wbCost) ? (baseTotal + wbCost) : NaN;
-
-  var perSqft = NaN;
-  if(isFinite(totalIncl) && isFinite(f.sqft) && f.sqft>0) perSqft = totalIncl / f.sqft;
-
-  if(byId("cNetRateOut")) byId("cNetRateOut").innerHTML = isFinite(netRate) ? netRate.toFixed(2) : "—";
-  if(byId("cWbCostOut")) byId("cWbCostOut").innerHTML = isFinite(wbCost) ? wbCost.toFixed(2) : "—";
-  if(byId("cTotalInclOut")) byId("cTotalInclOut").innerHTML = isFinite(totalIncl) ? totalIncl.toFixed(2) : "—";
-  if(byId("cPerSqftOut")) byId("cPerSqftOut").innerHTML = isFinite(perSqft) ? perSqft.toFixed(4) : "—";
-
-  if(!isFinite(wbRate)) byId("cHint").innerHTML="Enter Wet Blue Rate (per hide).";
-  else if(!isFinite(netRate)) byId("cHint").innerHTML="Check rate values.";
-  else if(!(isFinite(f.sqft) && f.sqft>0)) byId("cHint").innerHTML="Sqft not entered yet. Go to Finished Inventory → Update sqft.";
-  else byId("cHint").innerHTML="OK ✅";
-}
-function saveFinishedCosting(){
-  var db=ensureDB();
-  var finId = byId("costFinSel") ? byId("costFinSel").value : "";
-  var f = getFinishedById(db, finId);
-  if(!f){ alert("Select a finished lot"); return; }
+  // pcs = SIDES in this system
+  var pcs = isFinite(f.pcs) ? Number(f.pcs) : (isFinite(f.sides) ? Number(f.sides) : NaN);
 
   var wbRate = num(byId("cWbRate").value);
   var splitRec = num(byId("cSplitRec").value);
   var galmaRec = num(byId("cGalmaRec").value);
 
-  if(!isFinite(wbRate)){ alert("Enter Wet Blue Rate"); return; }
+  if(!isFinite(wbRate)) wbRate = 0;
   if(!isFinite(splitRec)) splitRec = 0;
   if(!isFinite(galmaRec)) galmaRec = 0;
 
+  var netRate = wbRate - splitRec - galmaRec;
+  if(byId("cNetRateOut")) byId("cNetRateOut").innerHTML = isFinite(netRate) ? netRate.toFixed(2) : "—";
+
+  var hidesUsed = (isFinite(pcs) && pcs>0) ? (pcs/2) : NaN;
+  var wbCost = (isFinite(netRate) && isFinite(hidesUsed)) ? (netRate * hidesUsed) : NaN;
+
+  if(byId("cWbCostOut")) byId("cWbCostOut").innerHTML = isFinite(wbCost) ? wbCost.toFixed(2) : "—";
+
+  var baseTotal = isFinite(f.totalCost) ? Number(f.totalCost) : 0; // Drum + Fin + Jobs (already)
+  var totalIncl = isFinite(wbCost) ? (baseTotal + wbCost) : NaN;
+
+  if(byId("cTotalInclOut")) byId("cTotalInclOut").innerHTML = isFinite(totalIncl) ? totalIncl.toFixed(2) : "—";
+
+  var perSqft = NaN;
+  if(isFinite(totalIncl) && isFinite(f.sqft) && f.sqft>0){
+    perSqft = totalIncl / f.sqft;
+  }
+  if(byId("cPerSqftOut")) byId("cPerSqftOut").innerHTML = isFinite(perSqft) ? perSqft.toFixed(4) : "—";
+
+  // Hint
+  var hint = "OK ✅";
+  if(!isFinite(pcs) || pcs<=0) hint = "Selected finished lot has invalid PCS/SIDES.";
+  else if(!isFinite(wbRate) || wbRate<0) hint = "Enter Wet Blue rate (per HIDE).";
+  else if(!(isFinite(f.sqft) && f.sqft>0)) hint = "Sqft not entered yet. Go to Finished Inventory → Update sqft.";
+  if(byId("cHint")) byId("cHint").innerHTML = hint;
+}
+function saveFinishedCosting(){
+  var db=ensureDB();
+  var f = getSelectedFinishedForCosting(db);
+  if(!f){ alert("Select a finished lot"); return; }
+
+  // pcs = SIDES in this system
+  var pcs = isFinite(f.pcs) ? Number(f.pcs) : (isFinite(f.sides) ? Number(f.sides) : NaN);
+  if(!isFinite(pcs) || pcs<=0){ alert("Invalid PCS/SIDES in finished lot"); return; }
+
+  var wbRate = num(byId("cWbRate").value);
+  var splitRec = num(byId("cSplitRec").value);
+  var galmaRec = num(byId("cGalmaRec").value);
+
+  if(!isFinite(wbRate)) wbRate = 0;
+  if(!isFinite(splitRec)) splitRec = 0;
+  if(!isFinite(galmaRec)) galmaRec = 0;
+
+  var netRate = wbRate - splitRec - galmaRec;
+  var hidesUsed = pcs/2;
+  var wbCost = netRate * hidesUsed;
+
+  var baseTotal = isFinite(f.totalCost) ? Number(f.totalCost) : 0;
+  var totalIncl = baseTotal + wbCost;
+
+  var perSqft = null;
+  if(isFinite(f.sqft) && f.sqft>0){
+    perSqft = totalIncl / f.sqft;
+  }
+
+  // Save on finished lot (do NOT overwrite main totals without wetblue)
   f.wbRate = wbRate;
   f.splitRecovery = splitRec;
   f.galmaRecovery = galmaRec;
-
-  // store calculated fields too (optional, for export)
-  var netRate = wbRate - splitRec - galmaRec;
-  var hidesUsed = (f.sides / SIDES_PER_HIDE);
-  f.netWbRate = netRate;
-  f.wbCost = netRate * hidesUsed;
-
-  f.totalCostInclWb = (isFinite(f.totalCost)?f.totalCost:0) + (isFinite(f.wbCost)?f.wbCost:0);
-  f.costPerSqftInclWb = (isFinite(f.sqft) && f.sqft>0) ? (f.totalCostInclWb / f.sqft) : null;
+  f.wbNetRate = netRate;
+  f.wbCost = wbCost;
+  f.totalCostInclWB = totalIncl;
+  f.costPerSqftInclWB = perSqft;
 
   setDB(db);
   alert("Costing saved ✅");
   recalcFinishedCosting();
+  renderFinished(); // so you can see updated totals if you display them later
 }
 
 /* ================= Printable Costing Sheet (Save as PDF via Print) ================= */
@@ -3125,7 +3186,8 @@ function printFinishedCostingSheet(){
   if(!isFinite(galmaRec)) galmaRec = 0;
 
   var netRate = wbRate - splitRec - galmaRec;
-  var hidesUsed = (f.sides||0) / SIDES_PER_HIDE;
+  var pcs = isFinite(f.pcs)?Number(f.pcs):(isFinite(f.sides)?Number(f.sides):0);
+  var hidesUsed = pcs / SIDES_PER_HIDE;
   var wbCost = netRate * hidesUsed;
 
   var drumAlloc = isFinite(f.drumAllocCost)?f.drumAllocCost:0;
@@ -3172,7 +3234,7 @@ function printFinishedCostingSheet(){
       '<table><tbody>'+
         '<tr><td>Wet Blue Lot</td><td class="right"><b>'+esc(f.wbLotNo||"")+'</b></td></tr>'+
         '<tr><td>Crust Lot</td><td class="right"><b>'+esc(f.crustLotNo||"")+'</b></td></tr>'+
-        '<tr><td>SIDES</td><td class="right"><b>'+esc(f.sides||0)+'</b></td></tr>'+
+        '<tr><td>SIDES</td><td class="right"><b>'+esc(pcs||0)+'</b></td></tr>'+
         '<tr><td>HIDE used</td><td class="right"><b>'+_fmt2(hidesUsed)+'</b></td></tr>'+
         '<tr><td>Sqft</td><td class="right"><b>'+ (isFinite(f.sqft)?Number(f.sqft).toFixed(2):"—") +'</b></td></tr>'+
       '</tbody></table>'+
