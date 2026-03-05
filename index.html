@@ -1215,7 +1215,9 @@ function clearJobsForLot(){
   renderJobsPage();
 }
 function calcJobCostForFinished(finishedObj, lines){
-  var sides = finishedObj.sides || 0;
+  // NOTE: In this build we store quantity as `pcs` (1 pc = 1 side).
+  // Keep backward-compat with older data that used `sides`.
+  var pcs = (finishedObj && isFinite(finishedObj.pcs)) ? Number(finishedObj.pcs) : (finishedObj.sides || 0);
   var total=0;
   var perSide=0;
 
@@ -1227,7 +1229,7 @@ function calcJobCostForFinished(finishedObj, lines){
 
     var cSide = coats * rate;
     perSide += cSide;
-    total += (cSide * sides);
+    total += (cSide * pcs);
   }
   return { total: total, perSide: perSide };
 }
@@ -1249,6 +1251,8 @@ function renderJobsPage(){
   for(var i=0;i<db.finished.length;i++) if(db.finished[i].id===finishedId){ f=db.finished[i]; break; }
   if(!f){ return; }
 
+  var pcs = (isFinite(f.pcs) ? Number(f.pcs) : (f.sides||0));
+
   var lines=db.jobsByFinishedId[finishedId] || [];
 
   if(!lines.length){
@@ -1261,7 +1265,7 @@ function renderJobsPage(){
       var rate=parseFloat(L.rate); if(!(isFinite(rate)&&rate>=0)) rate=0;
 
       var costPerSide = coats*rate;
-      var totalCost = costPerSide * (f.sides||0);
+      var totalCost = costPerSide * pcs;
 
       html+='<tr>' +
         '<td>'+esc(L.name||"")+'</td>' +
@@ -1290,8 +1294,12 @@ function renderJobsPage(){
 
   var drumAlloc = isFinite(f.drumAllocCost)?f.drumAllocCost:0;
   var finChem = isFinite(f.finChemCost)?f.finChemCost:0;
+
+  // Keep existing base cost fields, add jobs into totals
   f.totalCost = drumAlloc + finChem + (isFinite(f.jobCost)?f.jobCost:0);
-  f.costPerSide = (f.sides>0) ? (f.totalCost/f.sides) : null;
+  f.costPerPc = (pcs>0) ? (f.totalCost/pcs) : null;
+  // Backward compat for any screens still reading `costPerSide`
+  f.costPerSide = f.costPerPc;
 
   if(isFinite(f.sqft) && f.sqft>0){
     f.costPerSqft = f.totalCost / f.sqft;
